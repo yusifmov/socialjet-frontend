@@ -1,6 +1,6 @@
 import {FC, JSX, KeyboardEvent, MouseEvent, useEffect, useState} from 'react';
-import {Badge, Tabs} from 'antd';
-import {BellOutlined} from "@ant-design/icons";
+import {Badge, Button, Tabs} from 'antd';
+import {BellOutlined, PlusOutlined} from "@ant-design/icons";
 import useAccountPickerModal from "../Hooks/useAccountPickerModal";
 import {useDispatch, useSelector} from "react-redux";
 import {ScheduleDispatch, ScheduleState} from "../store";
@@ -113,6 +113,7 @@ const AccountSettingsStep: FC = () => {
                 activeKey={activeKey}
                 onEdit={onEdit}
                 items={settingItems}
+                addIcon={<Button icon={<PlusOutlined />}>select accounts</Button>}
             />
             {AccountPickerModal}
         </>

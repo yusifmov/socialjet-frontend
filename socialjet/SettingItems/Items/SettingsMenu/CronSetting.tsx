@@ -1,6 +1,6 @@
 import {Space, Switch, Typography} from 'antd';
-import { SettingsItemType } from '../../Types/SettingsItemType';
-import WordpressSettingsProvider from "../Providers/WordpressSettingsProvider";
+import { SettingsItemType } from '../../../Types/SettingsItemType.ts';
+import WordpressSettingsProvider from "../../Providers/WordpressSettingsProvider.tsx";
 import {CopyOutlined} from "@ant-design/icons";
 
 const {Paragraph, Text} = Typography;

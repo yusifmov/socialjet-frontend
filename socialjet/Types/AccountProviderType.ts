@@ -9,6 +9,7 @@ export interface AccountProviderType {
     title: string
     description: string
     picture: ReactNode
+    getAccountTypeText: (accountOrTypeKey: AccountType | string) => string
     supportsSetting: <T>(account: AccountType, setting: SettingsItemType<T>) => boolean
     getPostTemplates: (account: AccountType) => PostTemplateType[]
     AuthModal: FC<AuthModalPropsType>

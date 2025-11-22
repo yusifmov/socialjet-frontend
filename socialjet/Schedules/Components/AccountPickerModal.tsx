@@ -1,12 +1,13 @@
 import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {useApi} from "../../Hooks/useApi.ts";
 import {AccountType} from "../../Types/AccountType.ts";
-import {Button, Col, List, Modal, Row, Skeleton} from "antd";
+import {Button, Col, List, Modal, Row, Skeleton, Space, Typography} from "antd";
 import ProfileImage from "./ProfileImage.tsx";
 import Link from "antd/es/typography/Link";
 import store, {ScheduleDispatch} from "../store";
 import {useDispatch} from "react-redux";
 import {pushAccountSetting, removeAccountSetting} from "../Slices/scheduleSlice.ts";
+import {sj} from "../../SocialJet.ts";
 
 function AccountPickerModal(props: {zIndex: number, open: boolean, setOpen: Dispatch<SetStateAction<boolean>>}) {
     const {data: accounts, loading, sendRequest} = useApi<null, AccountType[]>();
@@ -94,9 +95,17 @@ function AccountPickerModal(props: {zIndex: number, open: boolean, setOpen: Disp
                                                 <Col>
                                                     <Row align={'middle'} gutter={[8, 8]}>
                                                         <Col><ProfileImage account={account}/></Col>
-                                                        <Col><Link href={account.link}
-                                                                   target={'_blank'}>{account.title}</Link></Col>
+                                                        <Col>
+                                                            <Space direction="vertical" size={0}>
+                                                                <Link href={account.link} target="_blank">
+                                                                    {account.title}
+                                                                </Link>
 
+                                                                <Typography.Text type="secondary">
+                                                                    {sj.getAccountProvider(account.provider).getAccountTypeText(account)}
+                                                                </Typography.Text>
+                                                            </Space>
+                                                        </Col>
                                                     </Row>
                                                 </Col>
                                                 {

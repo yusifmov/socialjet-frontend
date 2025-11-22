@@ -1,6 +1,6 @@
-import {SettingsItemType} from "../../../Types/SettingsItemType.ts";
+import {SettingsItemType} from "../../../../Types/SettingsItemType.ts";
 import {Select} from "antd";
-import SocialPostSettingsProvider from "../../Providers/SocialPostSettingsProvider.tsx";
+import SocialPostSettingsProvider from "../../../../SettingItems/Providers/SocialPostSettingsProvider.tsx";
 
 const FacebookPostTemplates: SettingsItemType<string> = {
     title: 'Select a social post template',
