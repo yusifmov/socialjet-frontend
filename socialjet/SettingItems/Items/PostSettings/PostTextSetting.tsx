@@ -1,11 +1,11 @@
-import {SettingsItemType} from "../../Types/SettingsItemType";
+import {SettingsItemType} from "../../../Types/SettingsItemType.ts";
 import {useEffect} from "react";
 import {EditorContent, useEditor} from "@tiptap/react";
 import {StarterKit} from "@tiptap/starter-kit";
-import TextTagNode from "../PostTextTags/TextTagNode.tsx";
+import TextTagNode from "../../PostTextTags/TextTagNode.tsx";
 import {Button, Col, Row, Space} from "antd";
-import {sj} from "../../SocialJet.ts";
-import SocialPostSettingsProvider from "../Providers/SocialPostSettingsProvider.tsx";
+import {sj} from "../../../SocialJet.ts";
+import SocialPostSettingsProvider from "../../Providers/SocialPostSettingsProvider.tsx";
 
 const MyView = (props: {setValue: (value: string) => void, value: string | undefined}) => {
     const {setValue, value} = props;
@@ -28,7 +28,7 @@ const MyView = (props: {setValue: (value: string) => void, value: string | undef
     function convertPlaceholdersToNodes(text: string) {
         const regex = /\{post_tag\s+([^}]+)\}/g
 
-        const parts: any[] = []
+        const parts = []
         let lastIndex = 0
 
         let match
@@ -54,7 +54,7 @@ const MyView = (props: {setValue: (value: string) => void, value: string | undef
     }
 
     useEffect(() => {
-        let parts = convertPlaceholdersToNodes(value || '')
+        const parts = convertPlaceholdersToNodes(value || '')
         editor?.commands.clearContent();
         editor?.commands.insertContent(parts);
     }, [editor])

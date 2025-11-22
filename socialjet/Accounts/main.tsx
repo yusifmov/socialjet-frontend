@@ -1,11 +1,12 @@
 import {FC, useEffect, useState} from "react";
-import {Button, Input, message, Modal, Popconfirm, Space, Table} from "antd";
+import {Button, Col, Input, message, Modal, Popconfirm, Row, Space, Table, Typography} from "antd";
 import {DeleteOutlined, PlusOutlined, SearchOutlined} from "@ant-design/icons";
 import {sj} from "../SocialJet";
 import {useApi} from "../Hooks/useApi";
 import {AccountType} from "../Types/AccountType";
 import ProfileImage from "../Schedules/Components/ProfileImage";
 import {AccountProviderType} from "../Types/AccountProviderType.ts";
+import Link from "antd/es/typography/Link";
 
 const AccountsMenuPage: FC = () => {
     const {sendRequest, loading} = useApi<any, AccountType[]>();
@@ -68,24 +69,21 @@ const AccountsMenuPage: FC = () => {
             title: "Account",
             key: "account",
             render: (_: any, record: AccountType) => (
-                <Space>
-                    <ProfileImage account={record}/>
-                    {record.title}
-                </Space>
+                <Row align={'middle'} gutter={[8, 8]}>
+                    <Col><ProfileImage account={record}/></Col>
+                    <Col>
+                        <Space direction="vertical" size={0}>
+                            <Link href={record.link} target="_blank">
+                                {record.title}
+                            </Link>
+
+                            <Typography.Text type="secondary">
+                                {sj.getAccountProvider(record.provider).getAccountTypeText(record)}
+                            </Typography.Text>
+                        </Space>
+                    </Col>
+                </Row>
             )
-        },
-        {
-            title: "Provider",
-            key: "provider",
-            render: (_: any, record: AccountType) => {
-                const provider = sj.getAccountProvider(record.provider);
-                return <Space>{provider.picture}{provider.title}</Space>;
-            }
-        },
-        {
-            title: "Type",
-            dataIndex: "type",
-            key: "type",
         },
         {
             title: "Actions",
