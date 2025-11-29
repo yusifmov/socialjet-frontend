@@ -22,7 +22,7 @@ function pushAccountSettingLogic(state: AccountSettingType[], accountSetting: Ac
             const settings: Record<string, any> = {};
             for (const item of settingsItems) {
                 if (
-                    sj.getAccountProvider(accountSetting.provider).supportsSetting(accountSetting, item)
+                    sj.getAccountProvider(accountSetting.provider)?.supportsSetting(accountSetting, item)
                     &&
                     item.targets.includes('schedule')
                 ) {

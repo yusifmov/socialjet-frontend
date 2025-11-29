@@ -102,7 +102,7 @@ function AccountPickerModal(props: {zIndex: number, open: boolean, setOpen: Disp
                                                                 </Link>
 
                                                                 <Typography.Text type="secondary">
-                                                                    {sj.getAccountProvider(account.provider).getAccountTypeText(account)}
+                                                                    {sj.getAccountProvider(account.provider)?.getAccountTypeText(account)}
                                                                 </Typography.Text>
                                                             </Space>
                                                         </Col>

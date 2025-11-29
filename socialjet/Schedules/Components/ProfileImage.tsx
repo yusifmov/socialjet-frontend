@@ -31,7 +31,7 @@ function ProfileImage(props: { account: AccountType }) {
             )}
 
             {/* Bottom-right icon */}
-            <Tooltip title={sj.getAccountProvider(account.provider).title}>
+            <Tooltip title={sj.getAccountProvider(account.provider)?.title}>
                 <div
                     style={{
                         position: 'absolute',
@@ -50,7 +50,7 @@ function ProfileImage(props: { account: AccountType }) {
                         cursor: 'pointer'
                     }}
                 >
-                    {sj.getAccountProvider(account.provider).picture}
+                    {sj.getAccountProvider(account.provider)?.picture}
                 </div>
             </Tooltip>
         </div>
