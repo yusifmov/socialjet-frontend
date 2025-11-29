@@ -87,14 +87,14 @@ const socialjet_get_menu_item = (key: string) : MenuItemType => {
     throw new Error('Settings item not found.');
 }
 
-const socialjet_get_account_provider = (key: string) : AccountProviderType => {
+const socialjet_get_account_provider = (key: string) : AccountProviderType | null => {
     const provider = SOCIALJET_ACCOUNT_PROVIDERS.find(item => item.slug === key);
 
     if(provider){
         return provider;
     }
 
-    throw new Error('Account provider not found.');
+    return null;
 }
 
 const socialjet_get_settings_provider = (key: string) : SettingsProviderType => {
