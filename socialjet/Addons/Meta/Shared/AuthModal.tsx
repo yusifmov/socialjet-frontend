@@ -3,7 +3,12 @@ import {Flex, Input, Modal, Switch, Typography} from 'antd';
 import {useApi} from "../../../Hooks/useApi.ts";
 import {MetaAuthType} from "./MetaAuthType.ts";
 
-const AuthModal = (props: {title: string, provider: string, open: boolean, setOpen: (open: boolean) => void}) => {
+const AuthModal = (props: {
+    title: string,
+    provider: string,
+    open: boolean,
+    setOpen: (open: boolean) => void,
+}) => {
     const [authForm, setAuthForm] = useState<MetaAuthType>({
         appId: '',
         appSecret: '',
@@ -21,7 +26,7 @@ const AuthModal = (props: {title: string, provider: string, open: boolean, setOp
     }
 
     const authorize = () => {
-        loginUrlApi.sendRequest('socialjet/addons/meta/get_login_url', {
+        loginUrlApi.sendRequest('socialjet/addons/meta/get_login_url' + `${props.provider === 'threads' ? `_threads` : ''}`, {
             client_id: authForm.appId,
             client_secret: authForm.appSecret,
             proxy: authForm.proxy,

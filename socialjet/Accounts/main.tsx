@@ -78,7 +78,7 @@ const AccountsMenuPage: FC = () => {
                             </Link>
 
                             <Typography.Text type="secondary">
-                                {sj.getAccountProvider(record.provider).getAccountTypeText(record)}
+                                {sj?.getAccountProvider(record.provider)?.getAccountTypeText(record)}
                             </Typography.Text>
                         </Space>
                     </Col>

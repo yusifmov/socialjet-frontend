@@ -17,7 +17,7 @@ export interface SocialJetType {
     getMenuItem: (key: string) => MenuItemType,
     registerAccountProvider: (accountProvider: AccountProviderType) => void,
     getAccountProviders: () => AccountProviderType[],
-    getAccountProvider: (key: string) => AccountProviderType,
+    getAccountProvider: (key: string) => AccountProviderType | null,
     registerPostTag: (postTag: PostTagType) => void,
     getPostTags: () => PostTagType[],
     getPostTag: (key: string) => PostTagType,

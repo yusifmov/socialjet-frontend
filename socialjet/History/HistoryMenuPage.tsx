@@ -1,10 +1,12 @@
 import {FC, useEffect, useState} from "react";
-import {Table, Avatar, Tag} from "antd";
+import {Table, Tag, Col, Space, Typography, Row} from "antd";
 import dayjs from "dayjs";
 import {AccountType} from "../Types/AccountType.ts";
 import {useApi} from "../Hooks/useApi.ts";
 import {sj} from "../SocialJet.ts";
 import {HistoryItemType} from "./Types/HistoryItemType.ts";
+import ProfileImage from "../Schedules/Components/ProfileImage.tsx";
+import Link from "antd/es/typography/Link";
 
 const statusColorMap: Record<string, string> = {
     Success: "green",
@@ -47,18 +49,32 @@ const HistoryMenuPage: FC = () => {
                 {
                     title: "Account",
                     dataIndex: "account",
-                    render: (account?: AccountType) => (
-                        account ? (
-                            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                <Avatar src={account.picture} /> {account.title}
-                            </span>
-                        ) : '-'
-                    )
-                },
-                {
-                    title: "Provider",
-                    dataIndex: ["account", "provider"],
-                    render: (provider: string) => (provider && sj.getAccountProvider(provider)?.title) || '-'
+                    render: (account?: AccountType) => {
+                        if(!account){
+                            return '-';
+                        }
+
+                        const provider = sj.getAccountProvider(account.provider);
+
+                        if(!provider){
+                            return '-';
+                        }
+
+                        return <Row align={'middle'} gutter={[8, 8]}>
+                            <Col><ProfileImage account={account}/></Col>
+                            <Col>
+                                <Space direction="vertical" size={0}>
+                                    <Link href={account.link} target="_blank">
+                                        {account.title}
+                                    </Link>
+
+                                    <Typography.Text type="secondary">
+                                        {provider.getAccountTypeText(account)}
+                                    </Typography.Text>
+                                </Space>
+                            </Col>
+                        </Row>
+                    }
                 },
                 {
                     title: "Schedule",

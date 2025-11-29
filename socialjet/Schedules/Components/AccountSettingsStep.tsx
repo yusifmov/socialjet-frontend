@@ -40,7 +40,7 @@ const buildAccountSettingsTab = (accountSettings: AccountSettingType, dispatch: 
         children: settingsItems
             .filter(
                 s => s.targets.includes('schedule') &&
-                    sj.getAccountProvider(account.provider).supportsSetting(account, s)
+                    sj.getAccountProvider(account.provider)?.supportsSetting(account, s)
             )
             .map(s => (
                 <div key={s.provider + ':' + s.slug} style={{ marginBottom: '1.5em' }}>
