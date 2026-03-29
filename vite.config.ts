@@ -19,6 +19,7 @@ export default defineConfig({
                 facebook: path.resolve(__dirname, 'socialjet/Addons/Meta/Facebook/facebook.tsx'),
                 instagram: path.resolve(__dirname, 'socialjet/ProAddons/Instagram/instagram.tsx'),
                 threads: path.resolve(__dirname, 'socialjet/ProAddons/Threads/threads.tsx'),
+                linkedin: path.resolve(__dirname, 'socialjet/ProAddons/LinkedIn/linkedin.tsx'),
                 menu: path.resolve(__dirname, 'socialjet/Menu/main.tsx'),
                 schedules: path.resolve(__dirname, 'socialjet/Schedules/main.tsx'),
                 settingItems: path.resolve(__dirname, 'socialjet/SettingItems/main.ts'),
