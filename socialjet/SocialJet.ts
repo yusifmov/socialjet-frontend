@@ -84,7 +84,7 @@ const socialjet_get_menu_item = (key: string) : MenuItemType => {
         }
     }
 
-    throw new Error('Settings item not found.');
+    throw new Error('Menu item not found.');
 }
 
 const socialjet_get_account_provider = (key: string) : AccountProviderType | null => {
