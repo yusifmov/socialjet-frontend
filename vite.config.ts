@@ -14,16 +14,8 @@ export default defineConfig({
         outDir: 'build',
         rollupOptions: {
             input: {
-                accounts: path.resolve(__dirname, 'socialjet/Accounts/main.tsx'),
-                history: path.resolve(__dirname, 'socialjet/History/main.tsx'),
-                facebook: path.resolve(__dirname, 'socialjet/Addons/Meta/Facebook/facebook.tsx'),
-                instagram: path.resolve(__dirname, 'socialjet/ProAddons/Instagram/instagram.tsx'),
-                threads: path.resolve(__dirname, 'socialjet/ProAddons/Threads/threads.tsx'),
-                linkedin: path.resolve(__dirname, 'socialjet/ProAddons/LinkedIn/linkedin.tsx'),
+                app: path.resolve(__dirname, 'socialjet/App/app.tsx'),
                 menu: path.resolve(__dirname, 'socialjet/Menu/main.tsx'),
-                schedules: path.resolve(__dirname, 'socialjet/Schedules/main.tsx'),
-                settingItems: path.resolve(__dirname, 'socialjet/SettingItems/main.ts'),
-                settings: path.resolve(__dirname, 'socialjet/Settings/main.tsx'),
                 socialjet: path.resolve(__dirname, 'socialjet/SocialJet.ts'),
             },
 
