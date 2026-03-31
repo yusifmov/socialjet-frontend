@@ -1,7 +1,7 @@
 import {FC} from "react";
 import {useSelector} from "react-redux";
 import {ScheduleState} from "../store.ts";
-import {Button, Col, Row} from "antd";
+import {Button, Col, Flex, Row} from "antd";
 import usePostPickerModal from "../Hooks/usePostPickerModal.tsx";
 import Link from "antd/es/typography/Link";
 
@@ -16,9 +16,29 @@ const PostsStep: FC = () => {
     return (
         <>
             <Col>
-                <Row><Button onClick={add}>Add posts</Button></Row>
+                <Row>
+                    <Col span={24}>
+                        <Flex style={{
+                            padding: '15px',
+                        }}>
+                            <Button onClick={add}>Add posts</Button>
+                        </Flex>
+                    </Col>
+                </Row>
                 <Col>
-                    {posts.map(p => <Row><Link href={p.link} target={'_blank'}>{p.title || 'Unknown'}</Link></Row>)}
+                    <Row>
+                    {posts.map(p => (
+                        <Col span={24} key={p.id}>
+                            <Flex style={{
+                                paddingBottom: "15px",
+                                paddingLeft: "15px",
+                                paddingRight: "15px",
+                            }}>
+                                <Link href={p.link} target={'_blank'}>{p.title || 'Unknown'}</Link>
+                            </Flex>
+                        </Col>
+                    ))}
+                    </Row>
                 </Col>
             </Col>
             {PostPickerModal}

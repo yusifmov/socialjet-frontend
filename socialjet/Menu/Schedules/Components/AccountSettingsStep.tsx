@@ -37,7 +37,7 @@ const buildAccountSettingsTab = (accountSettings: AccountSettingType, dispatch: 
                 {account.title}
             </div>
         ),
-        children: settingsItems
+        children: Object.values(settingsItems)
             .filter(
                 s => s.targets.includes('schedule') &&
                     sj.getAccountProvider(account.provider)?.supportsSetting(account, s)

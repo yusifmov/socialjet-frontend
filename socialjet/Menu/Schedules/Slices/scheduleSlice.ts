@@ -18,8 +18,8 @@ function pushAccountSettingLogic(state: AccountSettingType[], accountSetting: Ac
         const found = state.find(s => s.account.id === accountSetting.id);
 
         if (!found) {
-            const settingsItems = sj.getSettingsItems();
-            const settings: Record<string, any> = {};
+            const settingsItems = Object.values(sj.getSettingsItems());
+            const settings: Record<string, unknown> = {};
             for (const item of settingsItems) {
                 if (
                     sj.getAccountProvider(accountSetting.provider)?.supportsSetting(accountSetting, item)
@@ -105,10 +105,10 @@ const scheduleSlice = createSlice({
             state.accountSettings = pushAccountSettingLogic(state.accountSettings, action.payload);
         },
         updateAccountSetting: (state, action: {
-            payload: { account_id: number, value: any, setting_key: string };
+            payload: { account_id: number, value: unknown, setting_key: string };
             type: string
         }) => {
-            let i = state.accountSettings.findIndex(as => as.account.id === action.payload.account_id);
+            const i = state.accountSettings.findIndex(as => as.account.id === action.payload.account_id);
 
             if (i > -1) {
                 //todo update single setting

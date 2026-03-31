@@ -4,7 +4,6 @@ import {ThreadsAccountProvider, ThreadsPostTemplates} from "../AccountProviders/
 import {InstagramAccountProvider, InstagramPostTemplates} from "../AccountProviders/Meta/instagram.tsx";
 import {LinkedInAccountProvider, LinkedInPostTemplates} from "../AccountProviders/LinkedIn/linkedin.tsx";
 
-import {MenuItemAccounts} from "../Menu/Accounts/main.tsx";
 import {MenuItemHistory} from "../Menu/History/main.tsx";
 import {MenuItemSchedules} from "../Menu/Schedules/main.tsx";
 import {MenuItemSettings} from "../Menu/Settings/main.tsx";
@@ -15,6 +14,7 @@ import PostTextSetting from "../SettingItems/Items/PostSettings/PostTextSetting.
 import {PostTitleTag} from "../SettingItems/PostTextTags/PostTitleTag.ts";
 import {PostContentTag} from "../SettingItems/PostTextTags/PostContentTag.tsx";
 import {PostLinkTag} from "../SettingItems/PostTextTags/PostLinkTag.ts";
+import {MenuItemAccounts} from "../Menu/Accounts/main.tsx";
 
 //Account Providers
 sj.registerAccountProvider(FacebookAccountProvider);
@@ -42,6 +42,6 @@ sj.registerPostTag(PostContentTag);
 
 //Menu Items
 sj.registerMenuItem(MenuItemAccounts);
-sj.registerMenuItem(MenuItemHistory);
 sj.registerMenuItem(MenuItemSchedules);
+sj.registerMenuItem(MenuItemHistory);
 sj.registerMenuItem(MenuItemSettings);

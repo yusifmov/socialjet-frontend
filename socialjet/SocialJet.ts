@@ -9,13 +9,13 @@ import {PostTagType} from "./Types/PostTagType.ts";
 const SOCIALJET_MENU:MenuType[] = [];
 const SOCIALJET_MENU_ITEMS:MenuItemType[] = [];
 const SOCIALJET_SETTINGS_PROVIDERS: SettingsProviderType[] = [];
-const SOCIALJET_SETTINGS_ITEMS: SettingsItemType<any>[] = [];
+const SOCIALJET_SETTINGS_ITEMS: Record<string, SettingsItemType<any>> = {};
 const SOCIALJET_ACCOUNT_PROVIDERS: AccountProviderType[] = [];
 const SOCIALJET_POST_TAGS: PostTagType[] = [];
 
 const socialjet_register_menu_item = (item: MenuItemType) => {
     SOCIALJET_MENU_ITEMS.push(item);
-    //todo build menu only when getting menu
+
     if(!item.parent)
     {
         SOCIALJET_MENU.push({
@@ -46,23 +46,26 @@ const socialjet_register_post_tag = (tag: PostTagType) => {
 }
 
 const socialjet_register_settings_item = <T> (item: SettingsItemType<T>) => {
-    SOCIALJET_SETTINGS_ITEMS.push(item);
+    SOCIALJET_SETTINGS_ITEMS[`${item.provider}:${item.slug}`] = item;
 }
 
-const socialjet_get_settings_item = <T = any> (key: string) : SettingsItemType<T> => {
+const socialjet_unregister_settings_item = (provider: string, slug: string) => {
+    delete SOCIALJET_SETTINGS_ITEMS[`${provider}:${slug}`];
+}
+
+const socialjet_get_settings_item = <T> (key: string) : SettingsItemType<T> => {
     let parent: string | null = null;
     let slug: string | null;
     if(key.includes(':')){
         [parent, slug] = key.split(':');
+        slug = `${parent}:${slug}`;
     }
     else {
         slug = key;
     }
 
-    for (const i in SOCIALJET_SETTINGS_ITEMS){
-        if(SOCIALJET_SETTINGS_ITEMS[i].slug == slug && (parent == null || SOCIALJET_SETTINGS_ITEMS[i].provider == parent)){
-            return  SOCIALJET_SETTINGS_ITEMS[i];
-        }
+    if(slug in SOCIALJET_SETTINGS_ITEMS) {
+        return SOCIALJET_SETTINGS_ITEMS[slug];
     }
 
     throw new Error('Settings item not found.');
@@ -120,16 +123,21 @@ const socialjet_get_post_tag = (key: string) : PostTagType => {
 const SocialJet: SocialJetType = {
     getMenu: () => SOCIALJET_MENU,
     getSettingsProviders: () => SOCIALJET_SETTINGS_PROVIDERS,
-    getSettingsItems: () => SOCIALJET_SETTINGS_ITEMS,
-    getSettingsItem: socialjet_get_settings_item,
-    getMenuItem: socialjet_get_menu_item,
     registerSettingsProvider: socialjet_register_setting_provider,
     getSettingsProvider: socialjet_get_settings_provider,
+
+    getSettingsItems: () => SOCIALJET_SETTINGS_ITEMS,
+    getSettingsItem: socialjet_get_settings_item,
     registerSettingsItem: socialjet_register_settings_item,
+    unRegisterSettingsItem: socialjet_unregister_settings_item,
+
+    getMenuItem: socialjet_get_menu_item,
     registerMenuItem: socialjet_register_menu_item,
+
     registerAccountProvider: socialjet_register_account_provider,
     getAccountProviders: () => SOCIALJET_ACCOUNT_PROVIDERS,
     getAccountProvider: socialjet_get_account_provider,
+
     registerPostTag: socialjet_register_post_tag,
     getPostTags: () => SOCIALJET_POST_TAGS,
     getPostTag: socialjet_get_post_tag
