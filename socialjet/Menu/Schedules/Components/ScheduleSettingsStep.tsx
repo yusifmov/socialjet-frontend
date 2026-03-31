@@ -80,7 +80,7 @@ function ScheduleSettingsStep() {
                 <Row gutter={8}>
                     <Col span={12}>
                         <Form.Item name="title" label="Title">
-                            <Input placeholder="Schedule title" />
+                            <Input placeholder="Schedule title (optional)" />
                         </Form.Item>
                     </Col>
                     <Col span={12}>

@@ -1,6 +1,6 @@
 import {FC, JSX, KeyboardEvent, MouseEvent, useEffect, useState} from 'react';
-import {Badge, Tabs, Tooltip} from 'antd';
-import {BellOutlined, PlusOutlined} from "@ant-design/icons";
+import {Button, Flex, Tabs, Tooltip} from 'antd';
+import {PlusOutlined} from "@ant-design/icons";
 import useAccountPickerModal from "../Hooks/useAccountPickerModal.tsx";
 import {useDispatch, useSelector} from "react-redux";
 import {ScheduleDispatch, ScheduleState} from "../store.ts";
@@ -11,16 +11,8 @@ import {removeAccountSetting, updateAccountSetting} from "../Slices/scheduleSlic
 
 type TargetKey = MouseEvent | KeyboardEvent | string;
 
-const initialItems = [
-    {
-        label: <div style={{padding: "10px"}}>
-            <BellOutlined/> <Badge count={5} offset={[5, -5]}>Notifications</Badge>
-        </div>, children: 'Content of Tab 1', key: '1'
-    },
-];
-
 const AccountSettingsStep: FC = () => {
-    const [activeKey, setActiveKey] = useState(initialItems[0].key);
+    const [activeKey, setActiveKey] = useState<string | undefined>(undefined);
     const accountSettings = useSelector((state: ScheduleState) => state.schedule.accountSettings);
     const {modal: AccountPickerModal, setOpen: setAccountsModalOpen} = useAccountPickerModal();
     const dispatch = useDispatch<ScheduleDispatch>();
@@ -49,7 +41,7 @@ const AccountSettingsStep: FC = () => {
                         sj.getAccountProvider(account.provider)?.supportsSetting(account, s)
                 )
                 .map(s => (
-                    <div key={s.provider + ':' + s.slug} style={{ marginBottom: '1.5em' }}>
+                    <div key={s.provider + ':' + s.slug} style={{ marginBottom: '1.5em', padding: '6px' }}>
                         <div style={{ fontWeight: 'bold', marginBottom: '0.3em' }}>{s.title}</div>
                         <div style={{ fontSize: '0.9em', color: '#888', marginBottom: '0.6em' }}>{s.description}</div>
                         {s.render({
@@ -101,12 +93,13 @@ const AccountSettingsStep: FC = () => {
     };
 
     useEffect(() => {
+        if (activeKey == undefined) setActiveKey(accountSettings[0]?.account.id.toString())
         setSettingItems(accountSettings.map(s => buildAccountSettingsTab(s, dispatch)))
     }, [accountSettings, activeKey]);
 
     return (
         <>
-            <Tabs
+            {accountSettings.length > 0 && <Tabs
                 tabBarStyle={{
                     border: 'none',
                 }}
@@ -117,7 +110,12 @@ const AccountSettingsStep: FC = () => {
                 onEdit={onEdit}
                 items={settingItems}
                 addIcon={<Tooltip title={'Click to select accounts'}><PlusOutlined size={48}/></Tooltip>}
-            />
+            />}
+            {accountSettings.length === 0 && <Flex align={'center'} justify={'center'} style={{height: '100%'}}>
+              <Button type={'primary'}
+                      onClick={() => setAccountsModalOpen(true)}
+              >Click to select accounts</Button>
+            </Flex>}
             {AccountPickerModal}
         </>
 
