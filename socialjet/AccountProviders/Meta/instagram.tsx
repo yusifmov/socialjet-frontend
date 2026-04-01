@@ -9,7 +9,7 @@ import {SettingsItemType} from "../../Types/SettingsItemType.ts";
 
 export const InstagramPostTemplates: SettingsItemType<string> = {
     title: 'Select a social post template',
-    slug: 'post_template',
+    slug: 'instagram_post_template',
     description: 'This setting allows you to define what to share on Instagram.',
     provider: SocialPostSettingsProvider.slug,
     targets: ['schedule', 'instagram'],

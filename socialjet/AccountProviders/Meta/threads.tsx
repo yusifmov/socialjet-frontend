@@ -9,7 +9,7 @@ import {Select} from "antd";
 
 export const ThreadsPostTemplates: SettingsItemType<string> = {
     title: 'Select a social post template',
-    slug: 'post_template',
+    slug: 'threads_post_template',
     description: 'This setting allows you to define how your post looks on Threads.',
     provider: SocialPostSettingsProvider.slug,
     targets: ['schedule', 'threads'],

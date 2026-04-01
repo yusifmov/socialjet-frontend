@@ -9,7 +9,7 @@ import {SettingsItemType} from "../../Types/SettingsItemType.ts";
 
 export const LinkedInPostTemplates: SettingsItemType<string> = {
     title: 'Select a social post template',
-    slug: 'post_template',
+    slug: 'linkedin_post_template',
     description: 'This setting allows you to define how your post looks on LinkedIn.',
     provider: SocialPostSettingsProvider.slug,
     targets: ['schedule', 'linkedin'],

@@ -16,7 +16,7 @@ const Settings = () => {
         listApi.sendRequest('socialjet/settings/all').then((res) => {
             if (res) dispatch(setInitialSettings(res));
         });
-    }, [dispatch, listApi, listApi.sendRequest]);
+    }, [dispatch]);
 
     const items = Object.values(sj.getSettingsItems()).filter(i => i.targets.includes('settings'));
     const grouped = items.reduce((acc, cur) => {

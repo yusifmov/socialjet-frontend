@@ -9,7 +9,7 @@ import {AccountProviderType} from "../../Types/AccountProviderType.ts";
 
 export const FacebookPostTemplates: SettingsItemType<string> = {
     title: 'Select a social post template',
-    slug: 'post_template',
+    slug: 'facebook_post_template',
     description: 'This setting allows you to define how your post looks on Facebook.',
     provider: SocialPostSettingsProvider.slug,
     targets: ['schedule', 'facebook'],
