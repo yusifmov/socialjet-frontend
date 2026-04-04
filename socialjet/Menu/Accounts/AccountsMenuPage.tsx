@@ -150,7 +150,7 @@ export const AccountsMenuPage = () => {
                     {sj.getAccountProviders().map(provider => {
                         return (
                             <div key={provider.slug}>
-                                <Button onClick={() => {
+                                <Button icon={provider.picture} onClick={() => {
                                     setProviderOpen(true);
                                     setActiveProvider(provider)
                                 }}>{provider.title}</Button>
