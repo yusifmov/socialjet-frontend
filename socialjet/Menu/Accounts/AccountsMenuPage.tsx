@@ -1,5 +1,5 @@
 import {useCallback, useEffect, useState} from "react";
-import {Button, Col, Input, message, Modal, Popconfirm, Row, Space, Table, Typography} from "antd";
+import {App, Button, Col, Input, Modal, Popconfirm, Row, Space, Table, Typography} from "antd";
 import {DeleteOutlined, PlusOutlined, SearchOutlined} from "@ant-design/icons";
 import {sj} from "../../SocialJet.ts";
 import {useApi} from "../../Hooks/useApi.ts";
@@ -19,6 +19,8 @@ export const AccountsMenuPage = () => {
     const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
     const [activeProvider, setActiveProvider] = useState<AccountProviderType | undefined>(undefined)
     const [providerOpen, setProviderOpen] = useState<boolean>(false);
+
+    const {message} = App.useApp()
 
     const fetchAccounts = useCallback(async () => {
         if(!sendRequest) return;
@@ -73,7 +75,7 @@ export const AccountsMenuPage = () => {
         {
             title: "Account",
             key: "account",
-            render: (_: any, record: AccountType) => (
+            render: (_: number, record: AccountType) => (
                 <Row align={'middle'} gutter={[8, 8]}>
                     <Col><ProfileImage account={record}/></Col>
                     <Col>
