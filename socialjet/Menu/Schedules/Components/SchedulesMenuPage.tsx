@@ -10,7 +10,7 @@ import {
     Tag,
     Tooltip,
     Switch,
-    message
+    App
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import {
@@ -42,6 +42,7 @@ function SchedulesMenuPage() {
     const apiToggle = useApi<{ id: number }, boolean>();
 
     const dispatch = useDispatch<ScheduleDispatch>();
+    const {message} = App.useApp()
 
     const fetchData = async () => {
         const response = await apiList.sendRequest('socialjet/schedules/list', {

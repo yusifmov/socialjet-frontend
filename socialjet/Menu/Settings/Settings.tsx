@@ -9,16 +9,16 @@ import {sj} from "../../SocialJet.ts";
 const Settings = () => {
     const dispatch = useDispatch();
     const settings = useSelector((state: RootState) => state.settings);
-    const listApi = useApi<undefined, Record<string, any>>();
-    const saveApi = useApi<{ key: string; value: any }, any>();
+    const listApi = useApi<undefined, Record<string, unknown>>();
+    const saveApi = useApi<{ key: string; value: unknown }, unknown>();
 
     useEffect(() => {
         listApi.sendRequest('socialjet/settings/all').then((res) => {
             if (res) dispatch(setInitialSettings(res));
         });
-    }, []);
+    }, [dispatch]);
 
-    const items = sj.getSettingsItems().filter(i => i.targets.includes('settings'));
+    const items = Object.values(sj.getSettingsItems()).filter(i => i.targets.includes('settings'));
     const grouped = items.reduce((acc, cur) => {
         if (!acc[cur.provider]) acc[cur.provider] = [];
         acc[cur.provider].push(cur);

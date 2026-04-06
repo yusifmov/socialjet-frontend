@@ -19,12 +19,12 @@ const AuthModal = (props: {
 
     const onOpen = (open: boolean) => {
         if (open) {
-            callbackApi.sendRequest('socialjet/pro/accounts/linkedin/get_callback_url')
+            callbackApi.sendRequest('socialjet/accounts/linkedin/get_callback_url')
         }
     }
 
     const authorize = () => {
-        loginUrlApi.sendRequest('socialjet/pro/accounts/linkedin/get_login_url', {
+        loginUrlApi.sendRequest('socialjet/accounts/linkedin/get_login_url', {
             client_id: authForm.clientId,
             client_secret: authForm.clientSecret,
             proxy: authForm.proxy,

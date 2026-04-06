@@ -60,6 +60,7 @@ function ScheduleSettingsStep() {
     return (
         <Form
             layout="vertical"
+            style={{ padding: 6 }}
             form={form}
             initialValues={{
                 ...scheduleSettings,
@@ -73,13 +74,13 @@ function ScheduleSettingsStep() {
             }}
             onValuesChange={handleChange}
         >
-            <Card style={{ marginBottom: 8}} styles={{body:{padding: 8}}}>
+            <Card style={{ marginBottom: 8, backgroundColor: '#f0f0f0'}} styles={{body:{padding: 8}}}>
                 <Card.Meta title="Schedule Details"  description={"Set a title and starting time for your schedule"}/>
                 <Divider style={{ margin: '8px 0' }} />
                 <Row gutter={8}>
                     <Col span={12}>
                         <Form.Item name="title" label="Title">
-                            <Input placeholder="Schedule title" />
+                            <Input placeholder="Schedule title (optional)" />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
@@ -94,7 +95,7 @@ function ScheduleSettingsStep() {
                 </Row>
             </Card>
 
-            <Card title={null} style={{ marginBottom: 8}} styles={{body:{padding: 8}}}>
+            <Card title={null} style={{ marginBottom: 8, backgroundColor: '#f0f0f0'}} styles={{body:{padding: 8}}}>
                 <Card.Meta title="Planning Settings" description={"You can enable setting a weekly plan for your schedules by enabling 'Weekly planning' or just set posting interval between your posts."} />
                 <Divider style={{ margin: '8px 0' }} />
                 <Form.Item
@@ -155,7 +156,7 @@ function ScheduleSettingsStep() {
                 )}
             </Card>
 
-            <Card styles={{body:{padding: 8}}}>
+            <Card style={{backgroundColor: '#f0f0f0'}} styles={{body:{padding: 8}}}>
                 <Card.Meta title="Post Order Settings" description={"Select in what order to share posts"}/>
                 <Divider style={{ margin: '8px 0' }}/>
                 <Form.Item name="post_sort" label="Post Sort Order" layout={'horizontal'}>

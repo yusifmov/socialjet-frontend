@@ -7,12 +7,13 @@ import {PostTagType} from "./PostTagType.ts";
 
 export interface SocialJetType {
     registerSettingsItem: <T>(settingsItem: SettingsItemType<T>) => void,
+    unRegisterSettingsItem: (provider: string, slug: string) => void,
     registerMenuItem: (menuItem: MenuItemType) => void,
     registerSettingsProvider: (settingsProvider: SettingsProviderType) => void,
     getMenu: () => MenuType[],
     getSettingsProviders: () => SettingsProviderType[],
     getSettingsProvider: (key: string) => SettingsProviderType,
-    getSettingsItems: <T>() => SettingsItemType<T>[],
+    getSettingsItems: <T>() => Record<string, SettingsItemType<T>>,
     getSettingsItem: <T>(key: string) => SettingsItemType<T>,
     getMenuItem: (key: string) => MenuItemType,
     registerAccountProvider: (accountProvider: AccountProviderType) => void,

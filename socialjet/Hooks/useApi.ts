@@ -35,7 +35,7 @@ export function useApi<B, T>() {
             const res = result.data ?? null;
             setData(res);
             return res;
-        } catch (err) {
+        } catch {
             setError("An error occurred while fetching data.");
             return null;
         } finally {

@@ -1,5 +1,5 @@
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faLinkedin} from "@fortawesome/free-brands-svg-icons";
+import {faTelegram} from "@fortawesome/free-brands-svg-icons";
 import PostTextSetting from "../../SettingItems/Items/PostSettings/PostTextSetting.tsx";
 import AuthModal from "./Components/AuthModal.tsx";
 import {AccountProviderType} from "../../Types/AccountProviderType.ts";
@@ -7,12 +7,12 @@ import {Select} from "antd";
 import SocialPostSettingsProvider from "../../SettingItems/Providers/SocialPostSettingsProvider.tsx";
 import {SettingsItemType} from "../../Types/SettingsItemType.ts";
 
-export const LinkedInPostTemplates: SettingsItemType<string> = {
+export const TelegramPostTemplates: SettingsItemType<string> = {
     title: 'Select a social post template',
-    slug: 'linkedin_post_template',
-    description: 'This setting allows you to define how your post looks on LinkedIn.',
+    slug: 'telegram_post_template',
+    description: 'This setting allows you to define how your post looks on Telegram.',
     provider: SocialPostSettingsProvider.slug,
-    targets: ['schedule', 'linkedin'],
+    targets: ['schedule', 'telegram'],
     defaultValue: 'link_card',
     priority: 0,
     render: ({ value, setValue }) => (
@@ -25,11 +25,11 @@ export const LinkedInPostTemplates: SettingsItemType<string> = {
     ),
 };
 
-export const LinkedInAccountProvider: AccountProviderType = {
-    slug: 'linkedin',
-    title: 'LinkedIn',
-    description: 'LinkedIn',
-    picture: <FontAwesomeIcon icon={faLinkedin}></FontAwesomeIcon>,
+export const TelegramAccountProvider: AccountProviderType = {
+    slug: 'telegram',
+    title: 'telegram',
+    description: 'Telegram',
+    picture: <FontAwesomeIcon icon={faTelegram}></FontAwesomeIcon>,
     AuthModal: (props) => <AuthModal open={props.open} setOpen={props.setOpen} />,
     getAccountTypeText: (accountOrTypeKey) => {
         let type;
@@ -41,15 +41,15 @@ export const LinkedInAccountProvider: AccountProviderType = {
             type = accountOrTypeKey.type;
         }
 
-        if(type === 'page'){
-            return 'LinkedIn Page'
+        if(type === 'channel'){
+            return 'Channel'
         }
 
-        if(type === 'account'){
-            return 'LinkedIn Account'
+        if(type === 'group' || type === 'supergroup'){
+            return 'Group'
         }
 
-        return 'LinkedIn'
+        return 'Telegram Chat'
     },
     supportsSetting: (account, setting) => {
         return (
