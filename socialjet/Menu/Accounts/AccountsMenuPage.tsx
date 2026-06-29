@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useState} from "react";
-import {App, Button, Col, Input, Modal, Popconfirm, Row, Space, Table, Typography} from "antd";
-import {DeleteOutlined, PlusOutlined, SearchOutlined} from "@ant-design/icons";
+import {App, Button, Col, Input, Modal, Popconfirm, Row, Space, Table, Tag, Tooltip, Typography} from "antd";
+import {DeleteOutlined, PlusOutlined, ReloadOutlined, SearchOutlined, WarningOutlined} from "@ant-design/icons";
 import {sj} from "../../SocialJet.ts";
 import {useApi} from "../../Hooks/useApi.ts";
 import {AccountType} from "../../Types/AccountType.ts";
@@ -21,6 +21,17 @@ export const AccountsMenuPage = () => {
     const [providerOpen, setProviderOpen] = useState<boolean>(false);
 
     const {message} = App.useApp()
+
+    // `is_expired` arrives from WP as the string "0"/"1", and "0" is truthy in
+    // JS — so compare numerically rather than relying on truthiness.
+    const isExpired = (account: AccountType) => Number(account.is_expired) === 1;
+
+    const onReconnect = (account: AccountType) => {
+        const provider = sj?.getAccountProvider(account.provider);
+        if (!provider) return;
+        setActiveProvider(provider);
+        setProviderOpen(true);
+    };
 
     const fetchAccounts = useCallback(async () => {
         if(!sendRequest) return;
@@ -84,9 +95,16 @@ export const AccountsMenuPage = () => {
                                 {record.title}
                             </Link>
 
-                            <Typography.Text type="secondary">
-                                {sj?.getAccountProvider(record.provider)?.getAccountTypeText(record)}
-                            </Typography.Text>
+                            <Space size={4}>
+                                <Typography.Text type="secondary">
+                                    {sj?.getAccountProvider(record.provider)?.getAccountTypeText(record)}
+                                </Typography.Text>
+                                {isExpired(record) && (
+                                    <Tooltip title="This account's access has expired. Reconnect it to keep posting.">
+                                        <Tag icon={<WarningOutlined/>} color="error">Expired</Tag>
+                                    </Tooltip>
+                                )}
+                            </Space>
                         </Space>
                     </Col>
                 </Row>
@@ -96,9 +114,17 @@ export const AccountsMenuPage = () => {
             title: "Actions",
             key: "actions",
             render: (_: number, record: AccountType) => (
-                <Popconfirm title="Are you sure to delete?" onConfirm={() => onDelete(record.id)}>
-                    <Button icon={<DeleteOutlined/>} danger size="small">Delete</Button>
-                </Popconfirm>
+                <Space>
+                    {isExpired(record) && (
+                        <Button icon={<ReloadOutlined/>} type="primary" size="small"
+                                onClick={() => onReconnect(record)}>
+                            Reconnect
+                        </Button>
+                    )}
+                    <Popconfirm title="Are you sure to delete?" onConfirm={() => onDelete(record.id)}>
+                        <Button icon={<DeleteOutlined/>} danger size="small">Delete</Button>
+                    </Popconfirm>
+                </Space>
             )
         }
     ];

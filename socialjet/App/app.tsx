@@ -16,6 +16,7 @@ import {PostContentTag} from "../SettingItems/PostTextTags/PostContentTag.tsx";
 import {PostLinkTag} from "../SettingItems/PostTextTags/PostLinkTag.ts";
 import {MenuItemAccounts} from "../Menu/Accounts/main.tsx";
 import {TelegramAccountProvider, TelegramPostTemplates} from "../AccountProviders/Telegram/telegram.tsx";
+import {PinterestAccountProvider, PinterestPostTemplates} from "../AccountProviders/Pinterest/pinterest.tsx";
 
 //Account Providers
 sj.registerAccountProvider(FacebookAccountProvider);
@@ -23,6 +24,7 @@ sj.registerAccountProvider(ThreadsAccountProvider);
 sj.registerAccountProvider(InstagramAccountProvider);
 sj.registerAccountProvider(LinkedInAccountProvider);
 sj.registerAccountProvider(TelegramAccountProvider);
+sj.registerAccountProvider(PinterestAccountProvider);
 
 //SettingProviders
 sj.registerSettingsProvider(WordpressSettingsProvider);
@@ -34,6 +36,7 @@ sj.registerSettingsItem(ThreadsPostTemplates);
 sj.registerSettingsItem(InstagramPostTemplates);
 sj.registerSettingsItem(LinkedInPostTemplates);
 sj.registerSettingsItem(TelegramPostTemplates);
+sj.registerSettingsItem(PinterestPostTemplates);
 
 sj.registerSettingsItem(CronSetting);
 sj.registerSettingsItem(PostTextSetting);

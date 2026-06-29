@@ -11,11 +11,12 @@ const AuthModal = (props: {
         clientId: '',
         clientSecret: '',
         useProxy: false,
-        proxy: ''
+        proxy: '',
+        enableOrganizations: false
     });
 
     const callbackApi = useApi<null, {callback_url: string}>();
-    const loginUrlApi = useApi<{client_id: string, client_secret: string, provider: string, proxy: string}, {login_url: string}>();
+    const loginUrlApi = useApi<{client_id: string, client_secret: string, provider: string, proxy: string, enable_organizations: boolean}, {login_url: string}>();
 
     const onOpen = (open: boolean) => {
         if (open) {
@@ -28,7 +29,8 @@ const AuthModal = (props: {
             client_id: authForm.clientId,
             client_secret: authForm.clientSecret,
             proxy: authForm.proxy,
-            provider: 'linkedin'
+            provider: 'linkedin',
+            enable_organizations: authForm.enableOrganizations
         }).then(data => {
             window.open(data?.login_url, '_blank', 'width=800,height=600');
         })
@@ -67,6 +69,16 @@ const AuthModal = (props: {
                     <Typography.Title level={5}>LinkedIn Client Secret</Typography.Title>
                     <Input placeholder={'Enter your LinkedIn Client Secret'} value={authForm.clientSecret}
                            onChange={e => setAuthForm({...authForm, clientSecret: e.target.value ?? ''})}/>
+                </div>
+                <div>
+                    <Typography.Title level={5}>Enable Organizations (Pages)</Typography.Title>
+                    <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 4 }}>
+                        Turn this on only if your LinkedIn app has the Community Management API
+                        product approved. It lets you list and post as Organization pages you
+                        administer. Leave it off to connect your personal profile only.
+                    </Typography.Text>
+                    <Switch checked={authForm.enableOrganizations}
+                            onChange={checked => setAuthForm({...authForm, enableOrganizations: checked ?? false})}/>
                 </div>
                 <div>
                     <Typography.Title level={5}>Use proxy</Typography.Title>
