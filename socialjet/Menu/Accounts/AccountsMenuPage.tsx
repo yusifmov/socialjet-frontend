@@ -47,17 +47,24 @@ export const AccountsMenuPage = () => {
     }, []);
 
     useEffect(() => {
-        const handler = (msg: MessageEvent<{ status: boolean, message: string }>) => {
-            if (msg.data.status) {
+        const handler = (msg: MessageEvent) => {
+            const data = msg?.data;
+
+            // Ignore the many unrelated postMessage events on a WP admin page
+            // (browser, other plugins, devtools, Vite HMR…). Only react to our
+            // own OAuth-result messages, which carry the `socialjet` marker.
+            if (!data || typeof data !== 'object' || data.source !== 'socialjet') {
+                return;
+            }
+
+            if (data.status) {
                 setProviderOpen(false);
                 setActiveProvider(undefined);
                 setAuthModalOpen(false);
                 fetchAccounts();
-            }
-            if (msg.data.status) {
-                message.success(msg.data.message);
+                message.success(data.message);
             } else {
-                message.error(msg.data.message);
+                message.error(data.message);
             }
         };
 
