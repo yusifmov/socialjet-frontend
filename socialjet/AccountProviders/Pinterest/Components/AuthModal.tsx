@@ -65,7 +65,7 @@ const AuthModal = (props: {
                 </div>
                 <div>
                     <Typography.Title level={5}>Pinterest App Secret Key</Typography.Title>
-                    <Input placeholder={'Enter your Pinterest App Secret Key'} value={authForm.appSecretKey}
+                    <Input.Password placeholder={'Enter your Pinterest App Secret Key'} value={authForm.appSecretKey}
                            onChange={e => setAuthForm({...authForm, appSecretKey: e.target.value ?? ''})}/>
                 </div>
                 <div>

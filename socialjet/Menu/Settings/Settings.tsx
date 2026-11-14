@@ -16,7 +16,7 @@ const Settings = () => {
         listApi.sendRequest('socialjet/settings/all').then((res) => {
             if (res) dispatch(setInitialSettings(res));
         });
-    }, [dispatch]);
+    }, [dispatch, listApi.sendRequest]);
 
     const items = Object.values(sj.getSettingsItems()).filter(i => i.targets.includes('settings'));
     const grouped = items.reduce((acc, cur) => {
@@ -32,8 +32,8 @@ const Settings = () => {
                 return (
                     <Card
                         key={provider}
-                        title={providerMeta.title}
-                        extra={<div>{providerMeta.description}</div>}
+                        title={providerMeta?.title ?? provider}
+                        extra={<div>{providerMeta?.description}</div>}
                         style={{ marginBottom: 16 }}
                     >
                         {group.map(item => (

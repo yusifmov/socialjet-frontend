@@ -16,7 +16,7 @@ export const PinterestPostTemplates: SettingsItemType<string> = {
     defaultValue: 'single_image',
     priority: 0,
     render: ({ value, setValue }) => (
-        <Select style={{minWidth: '360px'}} defaultValue={value} onChange={setValue} options={[
+        <Select style={{minWidth: '360px'}} value={value} onChange={setValue} options={[
             {value:'single_image', label: 'Single image'},
             {value:'gallery', label: 'Gallery (carousel)'},
         ]}/>
