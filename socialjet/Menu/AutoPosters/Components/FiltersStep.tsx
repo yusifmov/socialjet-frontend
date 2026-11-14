@@ -131,6 +131,8 @@ function PreviewCard() {
     const {token} = theme.useToken();
     const filters = useSelector((state: AutoPosterState) => state.filters);
     const {data, loading, error, sendRequest} = useApi<{ filters: AutoPostFilters }, {
+        /** Scheduled posts are tried first; published ones only when none of those match. */
+        source: 'scheduled' | 'published',
         checked: number,
         matched: number,
         posts: ScheduledPostType[]
@@ -148,7 +150,7 @@ function PreviewCard() {
         <Card styles={{body: {padding: 16}}}>
             <Flex justify="space-between" align="start" gap={12}>
                 <Card.Meta title="Test filters"
-                           description="Check which of your latest published posts these filters would have picked. Nothing is shared."/>
+                           description="Check which of your scheduled posts these filters pick, or, if none match, which recent published posts they would have picked. Nothing is shared."/>
                 <Button icon={<ExperimentOutlined/>} onClick={run} loading={loading}
                         disabled={filters.post_types.length === 0}>
                     Test
@@ -159,8 +161,16 @@ function PreviewCard() {
                 {!stale && error && <Alert type="error" showIcon message={error}/>}
                 {!stale && data && !error && (
                     <Flex vertical gap={8}>
-                        <Alert type={data.matched ? 'success' : 'info'} showIcon
-                               message={`${data.matched} of the last ${data.checked} published posts match`}/>
+                        {data.source === 'scheduled' ? (
+                            <Alert type="success" showIcon
+                                   message={`${data.matched} of ${data.checked} scheduled posts match`}
+                                   description="These will be shared when they get published."/>
+                        ) : (
+                            <Alert type={data.matched ? 'warning' : 'info'} showIcon
+                                   message={`${data.matched} of the last ${data.checked} published posts match`}
+                                   description={'Only an example: posts that are already published are not shared. '
+                                       + 'The auto-poster shares posts published from now on, or unpublished and published again.'}/>
+                        )}
                         {data.posts.map(p => (
                             <Flex key={p.id} align="center" gap={12} style={{
                                 padding: '6px 10px',
@@ -172,7 +182,7 @@ function PreviewCard() {
                                 <Flex vertical style={{minWidth: 0, flex: 1}}>
                                     <Typography.Link href={p.link} target="_blank" ellipsis>{p.title || '(no title)'}</Typography.Link>
                                     <Typography.Text type="secondary" style={{fontSize: 12}}>
-                                        {[p.post_type, p.date].filter(Boolean).join(' · ')}
+                                        {[p.post_type, data.source === 'scheduled' ? `scheduled for ${p.date}` : p.date].filter(Boolean).join(' · ')}
                                     </Typography.Text>
                                 </Flex>
                             </Flex>
