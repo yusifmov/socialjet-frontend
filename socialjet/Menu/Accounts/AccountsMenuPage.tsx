@@ -9,7 +9,7 @@ import {AccountProviderType} from "../../Types/AccountProviderType.ts";
 import Link from "antd/es/typography/Link";
 
 export const AccountsMenuPage = () => {
-    const {sendRequest, loading} = useApi<any, AccountType[]>();
+    const {sendRequest, loading, error} = useApi<any, AccountType[]>();
     const {sendRequest: deleteRequest} = useApi<{ ids: number[] }, any>();
     const [accounts, setAccounts] = useState<AccountType[]>([]);
     const [filtered, setFiltered] = useState<AccountType[]>([]);
@@ -44,7 +44,11 @@ export const AccountsMenuPage = () => {
 
     useEffect(() => {
         fetchAccounts();
-    }, []);
+    }, [fetchAccounts]);
+
+    useEffect(() => {
+        if (error) message.error(error);
+    }, [error, message]);
 
     useEffect(() => {
         const handler = (msg: MessageEvent) => {
@@ -70,7 +74,7 @@ export const AccountsMenuPage = () => {
 
         window.addEventListener('message', handler);
         return () => window.removeEventListener('message', handler);
-    }, [activeProvider, providerOpen]);
+    }, [fetchAccounts, message]);
 
     const onDelete = async (id: number) => {
         const res = await deleteRequest("socialjet/accounts/delete", {ids: [id]});

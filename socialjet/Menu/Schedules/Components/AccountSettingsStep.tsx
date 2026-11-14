@@ -1,4 +1,4 @@
-import {FC, JSX, KeyboardEvent, MouseEvent, useEffect, useState} from 'react';
+import {FC, KeyboardEvent, MouseEvent, useEffect, useState} from 'react';
 import {Button, Flex, Tabs, Tooltip} from 'antd';
 import {PlusOutlined} from "@ant-design/icons";
 import useAccountPickerModal from "../Hooks/useAccountPickerModal.tsx";
@@ -16,8 +16,6 @@ const AccountSettingsStep: FC = () => {
     const accountSettings = useSelector((state: ScheduleState) => state.schedule.accountSettings);
     const {modal: AccountPickerModal, setOpen: setAccountsModalOpen} = useAccountPickerModal();
     const dispatch = useDispatch<ScheduleDispatch>();
-
-    const [settingItems, setSettingItems] = useState<{ label: JSX.Element; children: React.ReactNode[]; key: string }[]>([]);
 
     const buildAccountSettingsTab = (accountSettings: AccountSettingType, dispatch: ScheduleDispatch) => {
         const account = accountSettings.account;
@@ -71,7 +69,9 @@ const AccountSettingsStep: FC = () => {
 
     const remove = (targetKey: TargetKey) => {
         if (targetKey == activeKey) {
-            setActiveKey(accountSettings[0].account.id.toString())
+            // Move to a tab that is not the one being removed.
+            const next = accountSettings.find(e => e.account.id.toString() != targetKey);
+            setActiveKey(next?.account.id.toString());
         }
 
         const setting = accountSettings.find(e => e.account.id.toString() == targetKey);
@@ -93,9 +93,11 @@ const AccountSettingsStep: FC = () => {
     };
 
     useEffect(() => {
-        if (activeKey == undefined) setActiveKey(accountSettings[0]?.account.id.toString())
-        setSettingItems(accountSettings.map(s => buildAccountSettingsTab(s, dispatch)))
+        const exists = accountSettings.some(s => s.account.id.toString() == activeKey);
+        if (!exists) setActiveKey(accountSettings[0]?.account.id.toString())
     }, [accountSettings, activeKey]);
+
+    const settingItems = accountSettings.map(s => buildAccountSettingsTab(s, dispatch));
 
     return (
         <>

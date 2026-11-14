@@ -67,7 +67,7 @@ const AuthModal = (props: {
                 </div>
                 <div>
                     <Typography.Title level={5}>LinkedIn Client Secret</Typography.Title>
-                    <Input placeholder={'Enter your LinkedIn Client Secret'} value={authForm.clientSecret}
+                    <Input.Password placeholder={'Enter your LinkedIn Client Secret'} value={authForm.clientSecret}
                            onChange={e => setAuthForm({...authForm, clientSecret: e.target.value ?? ''})}/>
                 </div>
                 <div>

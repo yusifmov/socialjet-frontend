@@ -16,7 +16,7 @@ export const FacebookPostTemplates: SettingsItemType<string> = {
     defaultValue: 'link_card',
     priority: 0,
     render: ({ value, setValue }) => (
-        <Select style={{minWidth: '360px'}} defaultValue={value} onChange={setValue} options={[
+        <Select style={{minWidth: '360px'}} value={value} onChange={setValue} options={[
             {value:'link_card', label: 'LinkCard view'},
             {value:'single_image', label: 'Single image'},
             {value:'gallery', label: 'Gallery'},

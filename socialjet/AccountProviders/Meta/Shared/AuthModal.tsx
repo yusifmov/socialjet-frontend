@@ -50,7 +50,7 @@ const AuthModal = (props: {
                     <div>
                         <Typography.Title level={5}>Callback URL</Typography.Title>
                         <Typography.Text type="secondary" style={{ display: 'block', marginBottom: 4 }}>
-                            Use this URL as the redirect URL in your Facebook app settings.
+                            Use this URL as the redirect URL in your Meta app settings.
                         </Typography.Text>
                         <Typography.Paragraph
                             copyable={{ text: callbackApi.data.callback_url }}
@@ -61,13 +61,13 @@ const AuthModal = (props: {
                     </div>
                 )}
                 <div>
-                    <Typography.Title level={5}>Facebook APP ID</Typography.Title>
-                    <Input placeholder={'Enter your Facebook App ID'} value={authForm.appId}
+                    <Typography.Title level={5}>Meta App ID</Typography.Title>
+                    <Input placeholder={'Enter your Meta App ID'} value={authForm.appId}
                            onChange={e => setAuthForm({...authForm, appId: e.target.value ?? ''})}/>
                 </div>
                 <div>
-                    <Typography.Title level={5}>Facebook APP Secret</Typography.Title>
-                    <Input placeholder={'Enter your Facebook App Secret'} value={authForm.appSecret}
+                    <Typography.Title level={5}>Meta App Secret</Typography.Title>
+                    <Input.Password placeholder={'Enter your Meta App Secret'} value={authForm.appSecret}
                            onChange={e => setAuthForm({...authForm, appSecret: e.target.value ?? ''})}/>
                 </div>
                 <div>

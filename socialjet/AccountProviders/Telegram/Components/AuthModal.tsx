@@ -47,7 +47,7 @@ const AuthModal = (props: {
             <Flex vertical={true} gap={3}>
                 <div>
                     <Typography.Title level={5}>Telegram Bot Token</Typography.Title>
-                    <Input placeholder={'Enter your Telegram Bot Token'} value={authForm.token}
+                    <Input.Password placeholder={'Enter your Telegram Bot Token'} value={authForm.token}
                            onChange={e => setAuthForm({...authForm, token: e.target.value ?? ''})}/>
                 </div>
                 <div>

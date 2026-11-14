@@ -4,6 +4,7 @@ import {sj} from "../SocialJet.ts";
 import {MenuType} from "../Types/MenuType.ts";
 import {ItemType} from "antd/es/menu/interface";
 import MenuItemType from "../Types/MenuItemType.ts";
+import ErrorBoundary from "../Components/ErrorBoundary.tsx";
 
 const { Header, Content, Sider } = Layout;
 
@@ -63,7 +64,7 @@ const App: React.FC = () => {
                         <Breadcrumb
                             items={selectedItem
                                 ? (selectedItem.parent
-                                    ? [{ title: 'SocialJet' }, { title: sj.getMenuItem(selectedItem.parent).title }, { title: selectedItem.title }]
+                                    ? [{ title: 'SocialJet' }, { title: sj.getMenuItem(selectedItem.parent)?.title }, { title: selectedItem.title }]
                                     :[{ title: 'SocialJet' }, { title: selectedItem.title }])
                                 : [{ title: 'SocialJet' }]}
                             style={{ margin: '16px 0' }}
@@ -83,7 +84,9 @@ const App: React.FC = () => {
                             borderRadius: borderRadiusLG,
                         }}
                     >
-                        {selectedItem?.render? <selectedItem.render/> : 'Click on the menu'}
+                        <ErrorBoundary resetKey={selectedItem?.slug}>
+                            {selectedItem?.render? <selectedItem.render/> : 'Click on the menu'}
+                        </ErrorBoundary>
                     </Content>
                 </Layout>
             </Layout>
