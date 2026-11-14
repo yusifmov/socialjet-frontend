@@ -222,7 +222,7 @@ function PostPickerModal(props: { zIndex: number, open: boolean, setOpen: Dispat
                                 </Button>
                             )}
                             <Button size="small" disabled={pagePosts.length === 0} onClick={toggleAllOnPage}>
-                                {allOnPageSelected ? 'Unselect page' : 'Select page'}
+                                {allOnPageSelected ? 'Unselect all in this page' : 'Select all in this page'}
                             </Button>
                         </Space>
                     )}
