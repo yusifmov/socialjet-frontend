@@ -1,6 +1,2 @@
-import MenuItemType from "./MenuItemType";
-
-export interface MenuType{
-    item: MenuItemType
-    children: MenuItemType[]
-}
+/** @deprecated Import from "@socialjet/sdk". */
+export type {MenuType} from "@socialjet/sdk";

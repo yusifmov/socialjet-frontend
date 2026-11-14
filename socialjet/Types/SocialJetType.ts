@@ -1,25 +1,2 @@
-import {MenuType} from "./MenuType";
-import {SettingsProviderType} from "./SettingsProviderType.ts";
-import {SettingsItemType} from "./SettingsItemType.ts";
-import MenuItemType from "./MenuItemType.ts";
-import {AccountProviderType} from "./AccountProviderType.ts";
-import {PostTagType} from "./PostTagType.ts";
-
-export interface SocialJetType {
-    registerSettingsItem: <T>(settingsItem: SettingsItemType<T>) => void,
-    unRegisterSettingsItem: (provider: string, slug: string) => void,
-    registerMenuItem: (menuItem: MenuItemType) => void,
-    registerSettingsProvider: (settingsProvider: SettingsProviderType) => void,
-    getMenu: () => MenuType[],
-    getSettingsProviders: () => SettingsProviderType[],
-    getSettingsProvider: (key: string) => SettingsProviderType | null,
-    getSettingsItems: <T>() => Record<string, SettingsItemType<T>>,
-    getSettingsItem: <T>(key: string) => SettingsItemType<T> | null,
-    getMenuItem: (key: string) => MenuItemType | null,
-    registerAccountProvider: (accountProvider: AccountProviderType) => void,
-    getAccountProviders: () => AccountProviderType[],
-    getAccountProvider: (key: string) => AccountProviderType | null,
-    registerPostTag: (postTag: PostTagType) => void,
-    getPostTags: () => PostTagType[],
-    getPostTag: (key: string) => PostTagType | null,
-}
+/** @deprecated Import from "@socialjet/sdk". */
+export type {SocialJetType} from "@socialjet/sdk";

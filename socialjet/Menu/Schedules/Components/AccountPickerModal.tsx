@@ -3,7 +3,6 @@ import {useApi} from "../../../Hooks/useApi.ts";
 import {AccountType} from "../../../Types/AccountType.ts";
 import {Button, Col, List, Modal, Row, Skeleton, Space, Typography} from "antd";
 import ProfileImage from "./ProfileImage.tsx";
-import Link from "antd/es/typography/Link";
 import store, {ScheduleDispatch} from "../store.ts";
 import {useDispatch} from "react-redux";
 import {pushAccountSetting, removeAccountSetting} from "../Slices/scheduleSlice.ts";
@@ -97,9 +96,9 @@ function AccountPickerModal(props: {zIndex: number, open: boolean, setOpen: Disp
                                                         <Col><ProfileImage account={account}/></Col>
                                                         <Col>
                                                             <Space direction="vertical" size={0}>
-                                                                <Link href={account.link} target="_blank">
+                                                                <Typography.Link href={account.link} target="_blank">
                                                                     {account.title}
-                                                                </Link>
+                                                                </Typography.Link>
 
                                                                 <Typography.Text type="secondary">
                                                                     {sj.getAccountProvider(account.provider)?.getAccountTypeText(account)}

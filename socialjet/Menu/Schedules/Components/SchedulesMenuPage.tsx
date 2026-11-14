@@ -13,7 +13,7 @@ import {
     App,
     Popconfirm
 } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import type { TableColumnsType as ColumnsType } from "antd";
 import {
     DeleteOutlined,
     EditOutlined,

@@ -2,9 +2,11 @@ import React, {useState} from 'react';
 import {Breadcrumb, Flex, Layout, Menu, theme} from 'antd';
 import {sj} from "../SocialJet.ts";
 import {MenuType} from "../Types/MenuType.ts";
-import {ItemType} from "antd/es/menu/interface";
+import type {MenuProps} from "antd";
+
+type ItemType = NonNullable<MenuProps['items']>[number];
 import MenuItemType from "../Types/MenuItemType.ts";
-import ErrorBoundary from "../Components/ErrorBoundary.tsx";
+import {ErrorBoundary} from "@socialjet/sdk";
 
 const { Header, Content, Sider } = Layout;
 
