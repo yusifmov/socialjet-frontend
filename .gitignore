@@ -23,3 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 /wp-config.php
+
+# Build output (copied into the plugin)
+build
+*.tsbuildinfo
