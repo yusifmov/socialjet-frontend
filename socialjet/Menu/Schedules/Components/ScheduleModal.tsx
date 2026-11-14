@@ -27,7 +27,7 @@ const ScheduleModal: React.FC = () => {
 
     return (
         <>
-            <Modal open={open} closeIcon={null} footer={null} height={'600px'}>
+            <Modal open={open} closeIcon={null} footer={null} width={880} maskClosable={false}>
                 <ScheduleModalContent steps={steps}></ScheduleModalContent>
             </Modal>
         </>
