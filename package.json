@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite --force",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && vite build -c vite.shared.config.ts",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "socialjet:update": "socialjet update"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
@@ -16,6 +17,7 @@
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@fortawesome/react-fontawesome": "^3.1.0",
     "@reduxjs/toolkit": "^2.6.1",
+    "@socialjet/sdk": "file:../socialjet-sdk",
     "@tiptap/core": "^2.22.3",
     "@tiptap/react": "^2.22.3",
     "@tiptap/starter-kit": "^2.22.3",

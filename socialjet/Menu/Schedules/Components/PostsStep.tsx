@@ -1,9 +1,8 @@
 import {FC} from "react";
 import {useSelector} from "react-redux";
 import {ScheduleState} from "../store.ts";
-import {Button, Col, Flex, Row} from "antd";
+import {Button, Col, Flex, Row, Typography} from "antd";
 import usePostPickerModal from "../Hooks/usePostPickerModal.tsx";
-import Link from "antd/es/typography/Link";
 
 const PostsStep: FC = () => {
     const posts = useSelector((state: ScheduleState) => state.schedule.posts);
@@ -34,7 +33,7 @@ const PostsStep: FC = () => {
                                     paddingLeft: "15px",
                                     paddingRight: "15px",
                                 }}>
-                                    <Link href={p.link} target={'_blank'}>{p.title || 'Unknown'}</Link>
+                                    <Typography.Link href={p.link} target={'_blank'}>{p.title || 'Unknown'}</Typography.Link>
                                 </Flex>
                             </Col>
                         ))}

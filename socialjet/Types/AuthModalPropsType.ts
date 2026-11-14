@@ -1,4 +1,2 @@
-export interface AuthModalPropsType {
-    open: boolean
-    setOpen: (open: boolean) => void
-}
+/** @deprecated Import from "@socialjet/sdk". */
+export type {AuthModalPropsType} from "@socialjet/sdk";

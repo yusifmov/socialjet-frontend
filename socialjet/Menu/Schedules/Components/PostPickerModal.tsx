@@ -1,7 +1,6 @@
 import {Dispatch, SetStateAction, useEffect, useState} from "react";
 import {useApi} from "../../../Hooks/useApi.ts";
-import {Button, Col, Input, List, Modal, Row, Skeleton} from "antd";
-import Link from "antd/es/typography/Link";
+import {Button, Col, Input, List, Modal, Row, Skeleton, Typography} from "antd";
 import store, {ScheduleDispatch} from "../store.ts";
 import {useDispatch} from "react-redux";
 import ScheduledPostType from "../Types/ScheduledPostType.ts";
@@ -78,8 +77,8 @@ function PostPickerModal(props: {zIndex: number, open: boolean, setOpen: Dispatc
                                         }}>
                                             <Row justify={"space-between"} style={{width: "100%"}}>
                                                 <Col>
-                                                    <Col><Link href={post.link}
-                                                               target={'_blank'}>{post.title || 'Unknown'}</Link></Col>
+                                                    <Col><Typography.Link href={post.link}
+                                                               target={'_blank'}>{post.title || 'Unknown'}</Typography.Link></Col>
                                                 </Col>
                                                 {
                                                     isSelected(post)

@@ -1,5 +1,2 @@
-export interface PostTemplateType{
-    slug: string
-    title: string
-    description: string
-}
+/** @deprecated Import from "@socialjet/sdk". */
+export type {PostTemplateType} from "@socialjet/sdk";

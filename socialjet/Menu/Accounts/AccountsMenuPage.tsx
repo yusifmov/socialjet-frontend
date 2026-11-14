@@ -6,7 +6,6 @@ import {useApi} from "../../Hooks/useApi.ts";
 import {AccountType} from "../../Types/AccountType.ts";
 import ProfileImage from "../Schedules/Components/ProfileImage.tsx";
 import {AccountProviderType} from "../../Types/AccountProviderType.ts";
-import Link from "antd/es/typography/Link";
 
 export const AccountsMenuPage = () => {
     const {sendRequest, loading, error} = useApi<any, AccountType[]>();
@@ -102,9 +101,9 @@ export const AccountsMenuPage = () => {
                     <Col><ProfileImage account={record}/></Col>
                     <Col>
                         <Space direction="vertical" size={0}>
-                            <Link href={record.link} target="_blank">
+                            <Typography.Link href={record.link} target="_blank">
                                 {record.title}
-                            </Link>
+                            </Typography.Link>
 
                             <Space size={4}>
                                 <Typography.Text type="secondary">
