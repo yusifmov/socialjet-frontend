@@ -30,6 +30,7 @@ import {
 } from "@socialjet/sdk";
 import {sj} from "../../SocialJet.ts";
 import ProfileImage from "../Schedules/Components/ProfileImage.tsx";
+import {ADD_ACCOUNT_EVENT} from "./AddAccountActionButton.tsx";
 
 /** Grid of the registered networks; picking one opens its connect dialog. */
 function ProviderPicker(props: {
@@ -121,6 +122,13 @@ export const AccountsMenuPage = () => {
         window.addEventListener('message', handler);
         return () => window.removeEventListener('message', handler);
     }, [fetchAccounts, message]);
+
+    // "Add account" lives in the page header (see AddAccountActionButton).
+    useEffect(() => {
+        const open = () => setPickerOpen(true);
+        window.addEventListener(ADD_ACCOUNT_EVENT, open);
+        return () => window.removeEventListener(ADD_ACCOUNT_EVENT, open);
+    }, []);
 
     const openProvider = (provider: AccountProviderType) => {
         setPickerOpen(false);
@@ -279,9 +287,6 @@ export const AccountsMenuPage = () => {
                                 </Popconfirm>
                             )}
                         </Space>
-                        <Button type="primary" icon={<PlusOutlined/>} onClick={() => setPickerOpen(true)}>
-                            Add account
-                        </Button>
                     </Flex>
                     <Table
                         rowKey="id"

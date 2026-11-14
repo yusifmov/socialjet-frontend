@@ -1,10 +1,10 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Breadcrumb, Flex, Layout, Menu, Typography, theme} from 'antd';
 import type {MenuProps} from 'antd';
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faRocket} from "@fortawesome/free-solid-svg-icons";
 import {ErrorBoundary, type MenuItemType, type MenuType} from "@socialjet/sdk";
 import {sj} from "../SocialJet.ts";
+import Logo from "./Logo.tsx";
+import {brand} from "./theme.ts";
 
 const {Content, Sider} = Layout;
 
@@ -38,7 +38,7 @@ function defaultKey(menu: MenuType[]): string | undefined {
 }
 
 const App: React.FC = () => {
-    const {token: {colorBgContainer, borderRadiusLG, colorBorderSecondary, colorPrimary}} = theme.useToken();
+    const {token: {colorBgContainer, borderRadiusLG, colorBorderSecondary}} = theme.useToken();
 
     // Every add-on has registered by the time this module renders (it loads last).
     const menu = useMemo(() => sj.getMenu(), []);
@@ -68,28 +68,30 @@ const App: React.FC = () => {
     const parentItem = selectedItem?.parent ? sj.getMenuItem(selectedItem.parent) : null;
     const PageView = selectedItem?.render;
 
+    // The app fills the WP admin viewport exactly: the sidebar stays put and only
+    // the page area scrolls, so the browser window never gets an outer scrollbar.
     return (
-        <Layout style={{minHeight: '100%', boxSizing: 'border-box'}}>
-            <Sider width={240} style={{
-                background: colorBgContainer,
-                borderRight: `1px solid ${colorBorderSecondary}`,
+        <Layout style={{height: '100%', overflow: 'hidden'}}>
+            <Sider width={232} style={{
+                height: '100%',
                 overflowY: 'auto',
                 scrollbarWidth: 'thin',
+                borderRight: `1px solid ${colorBorderSecondary}`,
             }}>
-                <Flex align="center" gap={10} style={{height: 64, padding: '0 24px'}}>
-                    <FontAwesomeIcon icon={faRocket} style={{color: colorPrimary, fontSize: 18}}/>
-                    <Typography.Text strong style={{fontSize: 16}}>SocialJet</Typography.Text>
+                <Flex align="center" gap={10} style={{height: 68, padding: '0 22px'}}>
+                    <Logo size={30}/>
+                    <Typography.Text strong style={{fontSize: 17, color: brand.navy, letterSpacing: 0.2}}>SocialJet</Typography.Text>
                 </Flex>
                 <Menu
                     mode="inline"
                     selectedKeys={selectedKey ? [selectedKey] : []}
                     defaultOpenKeys={selectedItem?.parent ? [selectedItem.parent] : []}
-                    style={{borderRight: 0}}
+                    style={{borderInlineEnd: 0, background: 'transparent', fontWeight: 500}}
                     items={items}
                     onClick={e => select(e.key)}
                 />
             </Sider>
-            <Layout style={{padding: '0 24px 24px'}}>
+            <Layout style={{padding: '0 24px 24px', height: '100%', overflowY: 'auto'}}>
                 <Flex align="center" justify="space-between" style={{minHeight: 64}}>
                     <Breadcrumb items={[
                         {title: 'SocialJet'},
@@ -107,6 +109,7 @@ const App: React.FC = () => {
                     padding: 24,
                     margin: 0,
                     minHeight: 280,
+                    flex: 'none',
                     background: colorBgContainer,
                     borderRadius: borderRadiusLG,
                 }}>

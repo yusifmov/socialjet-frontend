@@ -9,15 +9,18 @@ import ScheduleModalContent from "./ScheduleModalContent.tsx";
 
 const steps = [
     {
-        title: 'Select Accounts',
+        title: 'Accounts',
+        description: 'Where to share',
         content: <AccountSettingsStep/>,
     },
     {
-        title: 'Select Posts',
+        title: 'Posts',
+        description: 'What to share',
         content: <PostsStep/>,
     },
     {
-        title: 'Schedule Settings',
+        title: 'Timing',
+        description: 'When to share',
         content: <ScheduleSettingsStep/>,
     },
 ];
@@ -27,7 +30,7 @@ const ScheduleModal: React.FC = () => {
 
     return (
         <>
-            <Modal open={open} closeIcon={null} footer={null} width={880} maskClosable={false}>
+            <Modal open={open} closeIcon={null} footer={null} width={960} maskClosable={false} centered>
                 <ScheduleModalContent steps={steps}></ScheduleModalContent>
             </Modal>
         </>
