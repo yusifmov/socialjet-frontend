@@ -78,7 +78,9 @@ const HistoryMenuPage: FC = () => {
                 {
                     title: "Schedule",
                     dataIndex: "schedule",
-                    render: schedule => schedule ? `${schedule.title} (${schedule.type})` : '-'
+                    render: schedule => schedule
+                        ? `${schedule.title || 'Untitled'} (${schedule.type === 'autoposter' ? 'auto-poster' : schedule.type})`
+                        : '-'
                 },
                 {
                     title: "Post",

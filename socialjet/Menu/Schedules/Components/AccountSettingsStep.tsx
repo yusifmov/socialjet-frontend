@@ -82,7 +82,7 @@ const AccountSettingsStep: FC = () => {
                         background: token.colorPrimaryBg, color: token.colorPrimary, fontSize: 24,
                     }}><TeamOutlined/></div>
                     <Typography.Title level={5} style={{margin: 0}}>Where should posts go?</Typography.Title>
-                    <Typography.Text type="secondary">Pick the accounts, pages or channels this schedule shares to.</Typography.Text>
+                    <Typography.Text type="secondary">Pick the accounts, pages or channels to share to.</Typography.Text>
                     <Button type="primary" size="large" onClick={() => setAccountsModalOpen(true)}>Select accounts</Button>
                 </Flex>
                 {AccountPickerModal}

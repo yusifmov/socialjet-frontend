@@ -7,6 +7,7 @@ import "../../addons/index.ts";
 
 import {MenuItemHistory} from "../Menu/History/main.tsx";
 import {MenuItemSchedules} from "../Menu/Schedules/main.tsx";
+import {MenuItemAutoPosters} from "../Menu/AutoPosters/main.tsx";
 import {MenuItemSettings} from "../Menu/Settings/main.tsx";
 import {MenuItemAccounts} from "../Menu/Accounts/main.tsx";
 import WordpressSettingsProvider from "../SettingItems/Providers/WordpressSettingsProvider.tsx";
@@ -33,5 +34,6 @@ sj.registerPostTag(PostContentTag);
 //Menu items
 sj.registerMenuItem(MenuItemAccounts);
 sj.registerMenuItem(MenuItemSchedules);
+sj.registerMenuItem(MenuItemAutoPosters);
 sj.registerMenuItem(MenuItemHistory);
 sj.registerMenuItem(MenuItemSettings);

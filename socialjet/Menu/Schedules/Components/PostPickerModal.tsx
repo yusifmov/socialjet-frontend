@@ -19,9 +19,9 @@ import {
 } from "antd";
 import {ExportOutlined, FileTextOutlined, ReloadOutlined, SearchOutlined} from "@ant-design/icons";
 import dayjs from "dayjs";
-import {useDispatch} from "react-redux";
+import {useDispatch, useStore} from "react-redux";
 import {useApi} from "@socialjet/sdk";
-import store, {ScheduleDispatch} from "../store.ts";
+import {ScheduleDispatch, ScheduleState} from "../store.ts";
 import ScheduledPostType from "../Types/ScheduledPostType.ts";
 import {setPosts} from "../Slices/scheduleSlice.ts";
 import PickerRow from "./PickerRow.tsx";
@@ -69,6 +69,7 @@ function PostPickerModal(props: { zIndex: number, open: boolean, setOpen: Dispat
     const [view, setView] = useState<'all' | 'selected'>('all');
     const [selectedPosts, setSelectedPosts] = useState<ScheduledPostType[]>([]);
     const dispatch = useDispatch<ScheduleDispatch>();
+    const store = useStore<ScheduleState>();
 
     const selectedIds = useMemo(() => new Set(selectedPosts.map(p => p.id)), [selectedPosts]);
     const isSelected = (post: ScheduledPostType) => selectedIds.has(post.id);
@@ -110,7 +111,7 @@ function PostPickerModal(props: { zIndex: number, open: boolean, setOpen: Dispat
             resetFilters();
             setView('all');
         }
-    }, [props.open]);
+    }, [props.open, store]);
 
     const pagePosts = data?.posts ?? [];
     const allOnPageSelected = pagePosts.length > 0 && pagePosts.every(isSelected);

@@ -1,10 +1,10 @@
 import {Dispatch, SetStateAction, useEffect, useMemo, useState} from "react";
 import {Button, Empty, Flex, Input, Modal, Segmented, Select, Space, Spin, Tag, Typography} from "antd";
 import {SearchOutlined, WarningOutlined} from "@ant-design/icons";
-import {useDispatch} from "react-redux";
+import {useDispatch, useStore} from "react-redux";
 import {type AccountType, isAccountExpired, normalizeAccount, useApi} from "@socialjet/sdk";
 import ProfileImage from "./ProfileImage.tsx";
-import store, {ScheduleDispatch} from "../store.ts";
+import {ScheduleDispatch, ScheduleState} from "../store.ts";
 import {pushAccountSetting, removeAccountSetting} from "../Slices/scheduleSlice.ts";
 import {sj} from "../../../SocialJet.ts";
 import PickerRow from "./PickerRow.tsx";
@@ -25,6 +25,8 @@ function AccountPickerModal(props: { zIndex: number, open: boolean, setOpen: Dis
     const [accountType, setAccountType] = useState<string | undefined>(undefined);
     const [view, setView] = useState<'all' | 'selected'>('all');
     const dispatch = useDispatch<ScheduleDispatch>();
+    // From the Provider, so the picker also works under the Auto-posters store.
+    const store = useStore<ScheduleState>();
 
     const isSelected = (id: number) => selectedAccounts.includes(id);
     const toggle = (id: number) => setSelectedAccounts(current =>
@@ -97,7 +99,7 @@ function AccountPickerModal(props: { zIndex: number, open: boolean, setOpen: Dis
             setAccountType(undefined);
             setView('all');
         }
-    }, [props.open, sendRequest]);
+    }, [props.open, sendRequest, store]);
 
     return (
         <Modal
