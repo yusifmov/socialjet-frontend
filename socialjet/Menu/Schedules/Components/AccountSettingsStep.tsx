@@ -1,5 +1,5 @@
 import {FC, KeyboardEvent, MouseEvent, useEffect, useState} from 'react';
-import {Button, Flex, Tabs, Tooltip} from 'antd';
+import {Button, Flex, Tabs, Tooltip, Typography} from 'antd';
 import {PlusOutlined} from "@ant-design/icons";
 import useAccountPickerModal from "../Hooks/useAccountPickerModal.tsx";
 import {useDispatch, useSelector} from "react-redux";
@@ -40,8 +40,8 @@ const AccountSettingsStep: FC = () => {
                 )
                 .map(s => (
                     <div key={s.provider + ':' + s.slug} style={{ marginBottom: '1.5em', padding: '6px' }}>
-                        <div style={{ fontWeight: 'bold', marginBottom: '0.3em' }}>{s.title}</div>
-                        <div style={{ fontSize: '0.9em', color: '#888', marginBottom: '0.6em' }}>{s.description}</div>
+                        <Typography.Text strong style={{display: 'block', marginBottom: 2}}>{s.title}</Typography.Text>
+                        <Typography.Text type="secondary" style={{display: 'block', marginBottom: 8}}>{s.description}</Typography.Text>
                         {s.render({
                             setValue: value => {
                                 dispatch(updateAccountSetting({
