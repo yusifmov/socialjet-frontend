@@ -87,8 +87,9 @@ const MyView = (props: {setValue: (value: string) => void, value: string | undef
             <div>
                 <div style={{
                     marginTop: '6px',
-                    border: '1px solid #d9d9d9',
-                    borderRadius: '6px',
+                    border: '1px solid var(--ant-color-border, #d9d9d9)',
+                    borderRadius: 'var(--ant-border-radius, 6px)',
+                    background: 'var(--ant-color-bg-container, #fff)',
                     minHeight: '120px',
                     textAlign: 'initial',
                 }}>

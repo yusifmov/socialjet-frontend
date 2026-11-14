@@ -5,6 +5,8 @@ export default interface ScheduledPostType{
     thumbnail?: string
     post_type?: string
     status?: string
+    /** Publish date, `Y-m-d H:i` in site time. */
+    date?: string
     shared_at?: string
     sharing_done?: boolean
 }
