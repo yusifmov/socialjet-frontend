@@ -5,6 +5,7 @@ import {ErrorBoundary, type MenuItemType, type MenuType} from "@socialjet/sdk";
 import {sj} from "../SocialJet.ts";
 import Logo from "./Logo.tsx";
 import {brand} from "./theme.ts";
+import ReviewNotice from "./ReviewNotice.tsx";
 
 const {Content, Sider} = Layout;
 
@@ -104,6 +105,8 @@ const App: React.FC = () => {
                         </Flex>
                     )}
                 </Flex>
+
+                <ReviewNotice/>
 
                 <Content style={{
                     padding: 24,
