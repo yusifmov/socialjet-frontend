@@ -1,18 +1,24 @@
 import {useDispatch} from "react-redux";
-import {ScheduleDispatch} from "../store.ts";
 import {Button} from "antd";
+import {PlusOutlined} from "@ant-design/icons";
+import {ScheduleDispatch} from "../store.ts";
 import {setOpen} from "../Slices/modalSlice.ts";
+import {getEmptySchedule, setSchedule} from "../Slices/scheduleSlice.ts";
 
-function ScheduleButtonContent(){
+/** Same look as the Accounts page's "Add account" button. */
+function ScheduleButtonContent() {
     const dispatch = useDispatch<ScheduleDispatch>();
 
     const onClick = () => {
+        dispatch(setSchedule(getEmptySchedule()));
         dispatch(setOpen(true));
-    }
+    };
 
-    return <>
-        <Button onClick={onClick}>New Schedule</Button>
-    </>
+    return (
+        <Button type="primary" icon={<PlusOutlined/>} onClick={onClick}>
+            New schedule
+        </Button>
+    );
 }
 
 export default ScheduleButtonContent;

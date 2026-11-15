@@ -1,9 +1,2 @@
-import {ReactNode} from "react";
-
-export interface SettingsProviderType {
-    title: ReactNode,
-    description: ReactNode,
-    icon: ReactNode,
-    priority: number,
-    slug: string,
-}
+/** @deprecated Import from "@socialjet/sdk". */
+export type {SettingsProviderType} from "@socialjet/sdk";

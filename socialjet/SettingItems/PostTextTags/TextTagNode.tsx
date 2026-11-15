@@ -24,6 +24,11 @@ export const MyTagView: FC<NodeViewProps> = (props) => {
     const openModal = () => setOpen(true)
     const closeModal = () => setOpen(false)
 
+    // An add-on that registered this tag may have been deactivated since the text was saved.
+    if (!tag) {
+        return <NodeViewWrapper as="span"><Button disabled>{props.node.attrs.params.type}</Button></NodeViewWrapper>
+    }
+
     return (
         <NodeViewWrapper as="span">
             <Button icon={<SettingOutlined />} onClick={() => {

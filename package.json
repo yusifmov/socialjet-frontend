@@ -1,27 +1,27 @@
 {
   "name": "socialpress",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.11",
   "type": "module",
   "scripts": {
     "dev": "vite --force",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && vite build -c vite.shared.config.ts",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "socialjet:update": "socialjet update"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
-    "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
     "@fortawesome/free-brands-svg-icons": "^7.1.0",
     "@fortawesome/free-regular-svg-icons": "^7.1.0",
     "@fortawesome/free-solid-svg-icons": "^7.1.0",
     "@fortawesome/react-fontawesome": "^3.1.0",
     "@reduxjs/toolkit": "^2.6.1",
+    "@socialjet/sdk": "github:yusifmov/socialjet-sdk#v1.0.11",
     "@tiptap/core": "^2.22.3",
     "@tiptap/react": "^2.22.3",
     "@tiptap/starter-kit": "^2.22.3",
-    "antd": "^5.22.1",
+    "antd": "^5.29.3",
     "dayjs": "^1.11.13",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

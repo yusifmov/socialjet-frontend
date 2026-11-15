@@ -1,204 +1,316 @@
-import {useCallback, useEffect, useState} from "react";
-import {App, Button, Col, Input, Modal, Popconfirm, Row, Space, Table, Tag, Tooltip, Typography} from "antd";
+import {useCallback, useEffect, useMemo, useState} from "react";
+import {
+    Alert,
+    App,
+    Button,
+    Card,
+    Col,
+    Empty,
+    Flex,
+    Input,
+    Modal,
+    Popconfirm,
+    Row,
+    Select,
+    Space,
+    Table,
+    Tag,
+    Tooltip,
+    Typography,
+    theme,
+} from "antd";
+import type {TableColumnsType} from "antd";
 import {DeleteOutlined, PlusOutlined, ReloadOutlined, SearchOutlined, WarningOutlined} from "@ant-design/icons";
+import {
+    type AccountProviderType,
+    type AccountType,
+    isAccountConnectResult,
+    isAccountExpired,
+    useApi,
+} from "@socialjet/sdk";
 import {sj} from "../../SocialJet.ts";
-import {useApi} from "../../Hooks/useApi.ts";
-import {AccountType} from "../../Types/AccountType.ts";
 import ProfileImage from "../Schedules/Components/ProfileImage.tsx";
-import {AccountProviderType} from "../../Types/AccountProviderType.ts";
-import Link from "antd/es/typography/Link";
+import {ADD_ACCOUNT_EVENT} from "./AddAccountActionButton.tsx";
+
+/** Grid of the registered networks; picking one opens its connect dialog. */
+function ProviderPicker(props: {
+    open: boolean
+    onClose: () => void
+    onPick: (provider: AccountProviderType) => void
+    connectedCount: (slug: string) => number
+}) {
+    const {token} = theme.useToken();
+
+    return (
+        <Modal open={props.open} onCancel={props.onClose} footer={null} width={560} title="Connect a social account">
+            <Typography.Paragraph type="secondary">
+                Pick a network. You'll use your own developer app for it — the dialog shows what to enter.
+            </Typography.Paragraph>
+            <Row gutter={[12, 12]}>
+                {sj.getAccountProviders().map(provider => {
+                    const count = props.connectedCount(provider.slug);
+                    return (
+                        <Col span={8} key={provider.slug}>
+                            <Card
+                                hoverable
+                                size="small"
+                                onClick={() => props.onPick(provider)}
+                                styles={{body: {padding: 16}}}
+                            >
+                                <Flex vertical align="center" gap={8}>
+                                    <span style={{fontSize: 28, color: token.colorTextSecondary}}>{provider.picture}</span>
+                                    <Typography.Text strong>{provider.title}</Typography.Text>
+                                    <Typography.Text type="secondary" style={{fontSize: 12}}>
+                                        {count > 0 ? `${count} connected` : 'Not connected'}
+                                    </Typography.Text>
+                                </Flex>
+                            </Card>
+                        </Col>
+                    );
+                })}
+            </Row>
+        </Modal>
+    );
+}
 
 export const AccountsMenuPage = () => {
-    const {sendRequest, loading} = useApi<any, AccountType[]>();
-    const {sendRequest: deleteRequest} = useApi<{ ids: number[] }, any>();
+    const {sendRequest, loading, error} = useApi<undefined, AccountType[]>();
+    const {sendRequest: deleteRequest, loading: deleting} = useApi<{ ids: number[] }, unknown>();
     const [accounts, setAccounts] = useState<AccountType[]>([]);
-    const [filtered, setFiltered] = useState<AccountType[]>([]);
+    const [loaded, setLoaded] = useState(false);
     const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
     const [search, setSearch] = useState("");
+    const [providerFilter, setProviderFilter] = useState<string | undefined>(undefined);
+    const [onlyExpired, setOnlyExpired] = useState(false);
 
-    const [authModalOpen, setAuthModalOpen] = useState<boolean>(false);
-    const [activeProvider, setActiveProvider] = useState<AccountProviderType | undefined>(undefined)
-    const [providerOpen, setProviderOpen] = useState<boolean>(false);
+    const [pickerOpen, setPickerOpen] = useState(false);
+    const [activeProvider, setActiveProvider] = useState<AccountProviderType | undefined>(undefined);
+    const [providerOpen, setProviderOpen] = useState(false);
 
-    const {message} = App.useApp()
-
-    // `is_expired` arrives from WP as the string "0"/"1", and "0" is truthy in
-    // JS — so compare numerically rather than relying on truthiness.
-    const isExpired = (account: AccountType) => Number(account.is_expired) === 1;
-
-    const onReconnect = (account: AccountType) => {
-        const provider = sj?.getAccountProvider(account.provider);
-        if (!provider) return;
-        setActiveProvider(provider);
-        setProviderOpen(true);
-    };
+    const {message} = App.useApp();
 
     const fetchAccounts = useCallback(async () => {
-        if(!sendRequest) return;
         const data = await sendRequest("socialjet/accounts/all");
-        if (data) {
-            setAccounts(data);
-            setFiltered(data);
-        }
+        if (data) setAccounts(data);
+        setLoaded(true);
     }, [sendRequest]);
 
     useEffect(() => {
         fetchAccounts();
-    }, []);
+    }, [fetchAccounts]);
 
     useEffect(() => {
+        if (error) message.error(error);
+    }, [error, message]);
+
+    // OAuth popups (and token-based connect flows) report back with a `socialjet` message.
+    useEffect(() => {
         const handler = (msg: MessageEvent) => {
-            const data = msg?.data;
+            if (!isAccountConnectResult(msg.data)) return;
 
-            // Ignore the many unrelated postMessage events on a WP admin page
-            // (browser, other plugins, devtools, Vite HMR…). Only react to our
-            // own OAuth-result messages, which carry the `socialjet` marker.
-            if (!data || typeof data !== 'object' || data.source !== 'socialjet') {
-                return;
-            }
-
-            if (data.status) {
+            if (msg.data.status) {
                 setProviderOpen(false);
                 setActiveProvider(undefined);
-                setAuthModalOpen(false);
+                setPickerOpen(false);
                 fetchAccounts();
-                message.success(data.message);
+                message.success(msg.data.message);
             } else {
-                message.error(data.message);
+                message.error(msg.data.message);
             }
         };
 
         window.addEventListener('message', handler);
         return () => window.removeEventListener('message', handler);
-    }, [activeProvider, providerOpen]);
+    }, [fetchAccounts, message]);
 
-    const onDelete = async (id: number) => {
-        const res = await deleteRequest("socialjet/accounts/delete", {ids: [id]});
+    // "Add account" lives in the page header (see AddAccountActionButton).
+    useEffect(() => {
+        const open = () => setPickerOpen(true);
+        window.addEventListener(ADD_ACCOUNT_EVENT, open);
+        return () => window.removeEventListener(ADD_ACCOUNT_EVENT, open);
+    }, []);
+
+    const openProvider = (provider: AccountProviderType) => {
+        setPickerOpen(false);
+        setActiveProvider(provider);
+        setProviderOpen(true);
+    };
+
+    const onReconnect = (account: AccountType) => {
+        const provider = sj.getAccountProvider(account.provider);
+        if (provider) openProvider(provider);
+    };
+
+    const remove = async (ids: number[], done: string) => {
+        const res = await deleteRequest("socialjet/accounts/delete", {ids});
         if (res !== null) {
-            message.success("Account deleted");
+            message.success(done);
+            setSelectedRowKeys(keys => keys.filter(k => !ids.includes(k)));
             fetchAccounts();
         }
     };
 
-    const onBulkDelete = async () => {
-        const res = await deleteRequest("socialjet/accounts/delete", {ids: selectedRowKeys});
-        if (res !== null) {
-            message.success("Selected accounts deleted");
-            setSelectedRowKeys([]);
-            fetchAccounts();
-        }
-    };
+    const expiredCount = useMemo(() => accounts.filter(isAccountExpired).length, [accounts]);
+    const providersInUse = useMemo(() => [...new Set(accounts.map(a => a.provider))], [accounts]);
 
-    const columns = [
+    const filtered = useMemo(() => {
+        const q = search.trim().toLowerCase();
+        return accounts.filter(acc =>
+            (!providerFilter || acc.provider === providerFilter) &&
+            (!onlyExpired || isAccountExpired(acc)) &&
+            (!q
+                || acc.title.toLowerCase().includes(q)
+                || acc.provider.toLowerCase().includes(q)
+                || (sj.getAccountProvider(acc.provider)?.getAccountTypeText(acc) ?? '').toLowerCase().includes(q))
+        );
+    }, [accounts, search, providerFilter, onlyExpired]);
+
+    const columns: TableColumnsType<AccountType> = [
         {
             title: "Account",
             key: "account",
-            render: (_: number, record: AccountType) => (
-                <Row align={'middle'} gutter={[8, 8]}>
-                    <Col><ProfileImage account={record}/></Col>
-                    <Col>
-                        <Space direction="vertical" size={0}>
-                            <Link href={record.link} target="_blank">
-                                {record.title}
-                            </Link>
-
-                            <Space size={4}>
-                                <Typography.Text type="secondary">
-                                    {sj?.getAccountProvider(record.provider)?.getAccountTypeText(record)}
-                                </Typography.Text>
-                                {isExpired(record) && (
-                                    <Tooltip title="This account's access has expired. Reconnect it to keep posting.">
-                                        <Tag icon={<WarningOutlined/>} color="error">Expired</Tag>
-                                    </Tooltip>
-                                )}
-                            </Space>
+            render: (_, record) => (
+                <Flex align="center" gap={12}>
+                    <ProfileImage account={record}/>
+                    <Space direction="vertical" size={0}>
+                        {record.link
+                            ? <Typography.Link href={record.link} target="_blank">{record.title}</Typography.Link>
+                            : <Typography.Text>{record.title}</Typography.Text>}
+                        <Space size={4}>
+                            <Typography.Text type="secondary">
+                                {sj.getAccountProvider(record.provider)?.getAccountTypeText(record) ?? record.provider}
+                            </Typography.Text>
+                            {isAccountExpired(record) && (
+                                <Tooltip title="This account's access has expired. Reconnect it to keep posting.">
+                                    <Tag icon={<WarningOutlined/>} color="error">Expired</Tag>
+                                </Tooltip>
+                            )}
                         </Space>
-                    </Col>
-                </Row>
-            )
+                    </Space>
+                </Flex>
+            ),
         },
         {
             title: "Actions",
             key: "actions",
-            render: (_: number, record: AccountType) => (
+            width: 220,
+            align: 'right',
+            render: (_, record) => (
                 <Space>
-                    {isExpired(record) && (
-                        <Button icon={<ReloadOutlined/>} type="primary" size="small"
-                                onClick={() => onReconnect(record)}>
+                    {isAccountExpired(record) && (
+                        <Button icon={<ReloadOutlined/>} type="primary" size="small" onClick={() => onReconnect(record)}>
                             Reconnect
                         </Button>
                     )}
-                    <Popconfirm title="Are you sure to delete?" onConfirm={() => onDelete(record.id)}>
-                        <Button icon={<DeleteOutlined/>} danger size="small">Delete</Button>
+                    <Popconfirm
+                        title={`Remove "${record.title}"?`}
+                        description="Schedules stop posting to it."
+                        okText="Remove"
+                        okButtonProps={{danger: true}}
+                        onConfirm={() => remove([record.id], "Account removed")}
+                    >
+                        <Button icon={<DeleteOutlined/>} danger size="small">Remove</Button>
                     </Popconfirm>
                 </Space>
-            )
-        }
+            ),
+        },
     ];
+
+    const isEmpty = loaded && accounts.length === 0 && !error;
 
     return (
         <>
-            <Space direction="vertical" style={{width: "100%"}}>
-                <div style={{display: 'flex', justifyContent: 'space-between', width: '100%'}}>
-                    <Space>
-                        <Input
-                            placeholder="Search by title, provider, or type"
-                            value={search}
-                            onChange={e => {
-                                const value = e.target.value;
-                                setSearch(value);
-                                setFiltered(
-                                    accounts.filter(acc =>
-                                        acc.title.toLowerCase().includes(value.toLowerCase()) ||
-                                        acc.provider.toLowerCase().includes(value.toLowerCase()) ||
-                                        (acc.type?.toLowerCase().includes(value.toLowerCase()) ?? false)
-                                    )
-                                );
-                            }}
-                            prefix={<SearchOutlined />}
-                        />
-                        {selectedRowKeys.length > 0 && (
-                            <Popconfirm title="Delete selected accounts?" onConfirm={onBulkDelete}>
-                                <Button icon={<DeleteOutlined/>} danger>Delete Selected</Button>
-                            </Popconfirm>
-                        )}
-                    </Space>
-                    <Button type="primary" icon={<PlusOutlined/>} size={'middle'}
-                            onClick={() => setAuthModalOpen(true)}>
-                        Add account
+            {isEmpty ? (
+                <Empty
+                    style={{padding: '48px 0'}}
+                    description={
+                        <Space direction="vertical" size={4}>
+                            <Typography.Text strong>No social accounts yet</Typography.Text>
+                            <Typography.Text type="secondary">
+                                Connect a page, profile or channel to start sharing your posts.
+                            </Typography.Text>
+                        </Space>
+                    }
+                >
+                    <Button type="primary" icon={<PlusOutlined/>} onClick={() => setPickerOpen(true)}>
+                        Connect your first account
                     </Button>
-                </div>
-                <Table
-                    rowKey="id"
-                    loading={loading}
-                    dataSource={filtered}
-                    columns={columns}
-                    rowSelection={{
-                        selectedRowKeys,
-                        onChange: (selectedKeys: any) => setSelectedRowKeys(selectedKeys),
-                    }}
-                />
-            </Space>
-            <Modal open={authModalOpen} onCancel={() => setAuthModalOpen(false)} footer={null}>
-                <h3>Select a provider to connect</h3>
-                <Space direction="vertical" style={{width: '100%'}}>
-                    {sj.getAccountProviders().map(provider => {
-                        return (
-                            <div key={provider.slug}>
-                                <Button icon={provider.picture} onClick={() => {
-                                    setProviderOpen(true);
-                                    setActiveProvider(provider)
-                                }}>{provider.title}</Button>
-                            </div>
-                        );
-                    })}
+                </Empty>
+            ) : (
+                <Space direction="vertical" size="middle" style={{width: "100%"}}>
+                    {expiredCount > 0 && (
+                        <Alert
+                            type="warning"
+                            showIcon
+                            message={`${expiredCount} account${expiredCount > 1 ? 's' : ''} lost access and won't receive posts until reconnected.`}
+                            action={
+                                <Button size="small" onClick={() => setOnlyExpired(v => !v)}>
+                                    {onlyExpired ? 'Show all' : 'Show them'}
+                                </Button>
+                            }
+                        />
+                    )}
+                    <Flex justify="space-between" gap={8} wrap>
+                        <Space wrap>
+                            <Input
+                                allowClear
+                                placeholder="Search accounts"
+                                value={search}
+                                onChange={e => setSearch(e.target.value)}
+                                prefix={<SearchOutlined/>}
+                                style={{width: 240}}
+                            />
+                            <Select
+                                allowClear
+                                placeholder="All networks"
+                                value={providerFilter}
+                                onChange={setProviderFilter}
+                                style={{width: 170}}
+                                options={providersInUse.map(slug => {
+                                    const provider = sj.getAccountProvider(slug);
+                                    return {
+                                        value: slug,
+                                        label: <Space size={6}>{provider?.picture}{provider?.title ?? slug}</Space>,
+                                    };
+                                })}
+                            />
+                            {selectedRowKeys.length > 0 && (
+                                <Popconfirm
+                                    title={`Remove ${selectedRowKeys.length} account(s)?`}
+                                    okText="Remove"
+                                    okButtonProps={{danger: true}}
+                                    onConfirm={() => remove(selectedRowKeys, "Selected accounts removed")}
+                                >
+                                    <Button icon={<DeleteOutlined/>} danger loading={deleting}>
+                                        Remove selected ({selectedRowKeys.length})
+                                    </Button>
+                                </Popconfirm>
+                            )}
+                        </Space>
+                    </Flex>
+                    <Table
+                        rowKey="id"
+                        loading={loading && !loaded}
+                        dataSource={filtered}
+                        columns={columns}
+                        pagination={filtered.length > 20 ? {pageSize: 20, showSizeChanger: false} : false}
+                        locale={{emptyText: loaded ? 'No accounts match these filters.' : ' '}}
+                        rowSelection={{
+                            selectedRowKeys,
+                            onChange: keys => setSelectedRowKeys(keys as number[]),
+                        }}
+                    />
                 </Space>
-            </Modal>
+            )}
+
+            <ProviderPicker
+                open={pickerOpen}
+                onClose={() => setPickerOpen(false)}
+                onPick={openProvider}
+                connectedCount={slug => accounts.filter(a => a.provider === slug).length}
+            />
             {activeProvider && (
-                <activeProvider.AuthModal
-                    open={providerOpen}
-                    setOpen={setProviderOpen}
-                />
+                <activeProvider.AuthModal open={providerOpen} setOpen={setProviderOpen}/>
             )}
         </>
     );

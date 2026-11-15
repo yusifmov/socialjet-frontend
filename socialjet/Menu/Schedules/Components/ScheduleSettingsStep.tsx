@@ -13,15 +13,21 @@ import {
     Card, Divider,
 } from "antd";
 import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, useStore } from "react-redux";
 import dayjs from "dayjs";
 import { WeekDaysEnum } from "../Types/WeekDaysEnum.ts";
-import store, { ScheduleState } from "../store.ts";
+import { ScheduleState } from "../store.ts";
 import ScheduleSettingsType from "../Types/ScheduleSettingsType.ts";
 import {setSettings} from "../Slices/scheduleSlice.ts";
 
-function ScheduleSettingsStep() {
+/**
+ * Timing step. The `autoposter` variant (also used by the Auto-posters page) has no
+ * start date or post order: posts arrive one by one as they get published.
+ */
+function ScheduleSettingsStep({ variant = "schedule" }: { variant?: "schedule" | "autoposter" }) {
+    const isAutoPoster = variant === "autoposter";
     const dispatch = useDispatch();
+    const store = useStore<ScheduleState>();
     const scheduleSettings = useSelector((state: ScheduleState) => state.schedule.scheduleSettings);
     const [form] = Form.useForm();
 
@@ -60,7 +66,7 @@ function ScheduleSettingsStep() {
     return (
         <Form
             layout="vertical"
-            style={{ padding: 6 }}
+            style={{ padding: 16 }}
             form={form}
             initialValues={{
                 ...scheduleSettings,
@@ -74,16 +80,19 @@ function ScheduleSettingsStep() {
             }}
             onValuesChange={handleChange}
         >
-            <Card style={{ marginBottom: 8, backgroundColor: '#f0f0f0'}} styles={{body:{padding: 8}}}>
-                <Card.Meta title="Schedule Details"  description={"Set a title and starting time for your schedule"}/>
-                <Divider style={{ margin: '8px 0' }} />
+            <Card style={{ marginBottom: 12 }} styles={{body:{padding: 16}}}>
+                <Card.Meta
+                    title={isAutoPoster ? "Auto-poster Details" : "Schedule Details"}
+                    description={isAutoPoster ? "Name this auto-poster so you can find it later" : "Set a title and starting time for your schedule"}
+                />
+                <Divider style={{ margin: '12px 0' }} />
                 <Row gutter={8}>
-                    <Col span={12}>
+                    <Col span={isAutoPoster ? 24 : 12}>
                         <Form.Item name="title" label="Title">
-                            <Input placeholder="Schedule title (optional)" />
+                            <Input placeholder={isAutoPoster ? "Auto-poster title (optional)" : "Schedule title (optional)"} />
                         </Form.Item>
                     </Col>
-                    <Col span={12}>
+                    {!isAutoPoster && <Col span={12}>
                         <Form.Item name="start_at" label="Start At">
                             <DatePicker
                                 showTime
@@ -91,13 +100,18 @@ function ScheduleSettingsStep() {
                                 style={{ width: "100%" }}
                             />
                         </Form.Item>
-                    </Col>
+                    </Col>}
                 </Row>
             </Card>
 
-            <Card title={null} style={{ marginBottom: 8, backgroundColor: '#f0f0f0'}} styles={{body:{padding: 8}}}>
-                <Card.Meta title="Planning Settings" description={"You can enable setting a weekly plan for your schedules by enabling 'Weekly planning' or just set posting interval between your posts."} />
-                <Divider style={{ margin: '8px 0' }} />
+            <Card title={null} style={{ marginBottom: 12 }} styles={{body:{padding: 16}}}>
+                <Card.Meta
+                    title="Planning Settings"
+                    description={isAutoPoster
+                        ? "New posts are shared as soon as they are published, keeping at least the gap below between shares. Enable 'Weekly planning' to share only at set times instead."
+                        : "You can enable setting a weekly plan for your schedules by enabling 'Weekly planning' or just set posting interval between your posts."}
+                />
+                <Divider style={{ margin: '12px 0' }} />
                 <Form.Item
                     name="is_planned"
                     label="Enable Weekly Planning"
@@ -108,8 +122,12 @@ function ScheduleSettingsStep() {
                 </Form.Item>
 
                 {!scheduleSettings.is_planned && (
-                    <Form.Item name="sharing_gap" label="Posting Interval (minutes)" layout={'horizontal'}>
-                        <InputNumber min={1} style={{ width: "100%" }} />
+                    <Form.Item
+                        name="sharing_gap"
+                        label={isAutoPoster ? "Minimum gap between shares (minutes)" : "Posting Interval (minutes)"}
+                        layout={'horizontal'}
+                    >
+                        <InputNumber min={isAutoPoster ? 0 : 1} style={{ width: "100%" }} />
                     </Form.Item>
                 )}
 
@@ -156,9 +174,9 @@ function ScheduleSettingsStep() {
                 )}
             </Card>
 
-            <Card style={{backgroundColor: '#f0f0f0'}} styles={{body:{padding: 8}}}>
+            {!isAutoPoster && <Card styles={{body:{padding: 16}}}>
                 <Card.Meta title="Post Order Settings" description={"Select in what order to share posts"}/>
-                <Divider style={{ margin: '8px 0' }}/>
+                <Divider style={{ margin: '12px 0' }}/>
                 <Form.Item name="post_sort" label="Post Sort Order" layout={'horizontal'}>
                     <Select>
                         <Select.Option value="old_to_new">Old to New</Select.Option>
@@ -166,7 +184,7 @@ function ScheduleSettingsStep() {
                         <Select.Option value="scramble">Scramble</Select.Option>
                     </Select>
                 </Form.Item>
-            </Card>
+            </Card>}
         </Form>
     );
 }

@@ -6,7 +6,6 @@ import {useApi} from "../../Hooks/useApi.ts";
 import {sj} from "../../SocialJet.ts";
 import {HistoryItemType} from "./Types/HistoryItemType.ts";
 import ProfileImage from "../Schedules/Components/ProfileImage.tsx";
-import Link from "antd/es/typography/Link";
 
 const statusColorMap: Record<string, string> = {
     Success: "green",
@@ -64,9 +63,9 @@ const HistoryMenuPage: FC = () => {
                             <Col><ProfileImage account={account}/></Col>
                             <Col>
                                 <Space direction="vertical" size={0}>
-                                    <Link href={account.link} target="_blank">
+                                    <Typography.Link href={account.link} target="_blank">
                                         {account.title}
-                                    </Link>
+                                    </Typography.Link>
 
                                     <Typography.Text type="secondary">
                                         {provider.getAccountTypeText(account)}
@@ -79,7 +78,9 @@ const HistoryMenuPage: FC = () => {
                 {
                     title: "Schedule",
                     dataIndex: "schedule",
-                    render: schedule => schedule ? `${schedule.title} (${schedule.type})` : '-'
+                    render: schedule => schedule
+                        ? `${schedule.title || 'Untitled'} (${schedule.type === 'autoposter' ? 'auto-poster' : schedule.type})`
+                        : '-'
                 },
                 {
                     title: "Post",

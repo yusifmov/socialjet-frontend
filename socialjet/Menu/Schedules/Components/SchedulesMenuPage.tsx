@@ -10,9 +10,10 @@ import {
     Tag,
     Tooltip,
     Switch,
-    App
+    App,
+    Popconfirm
 } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import type { TableColumnsType as ColumnsType } from "antd";
 import {
     DeleteOutlined,
     EditOutlined,
@@ -79,6 +80,7 @@ function SchedulesMenuPage() {
             if (s?.id) await apiDelete.sendRequest(`socialjet/schedules/delete`, { id: s.id });
         }
         message.success("Selected schedules deleted");
+        setSelectedRowKeys([]);
         fetchData();
     };
 
@@ -141,9 +143,11 @@ function SchedulesMenuPage() {
             key: 'action',
             render: (_, record) => (
                 <Space>
-                    <Tooltip title="Delete">
-                        <Button icon={<DeleteOutlined />} danger onClick={() => deleteSchedule(record.id)} />
-                    </Tooltip>
+                    <Popconfirm title="Delete this schedule?" onConfirm={() => deleteSchedule(record.id)}>
+                        <Tooltip title="Delete">
+                            <Button icon={<DeleteOutlined />} danger />
+                        </Tooltip>
+                    </Popconfirm>
                     {record.status === 'done' || <Tooltip title="Edit">
                       <Button icon={<EditOutlined />} onClick={() => {
                           dispatch(setSchedule(record));
@@ -183,9 +187,11 @@ function SchedulesMenuPage() {
                 </Col>
                 <Col>
                     {selectedRowKeys.length > 0 && (
-                        <Button danger onClick={bulkDelete} icon={<DeleteOutlined />}>
-                            Delete Selected
-                        </Button>
+                        <Popconfirm title={`Delete ${selectedRowKeys.length} selected schedule(s)?`} onConfirm={bulkDelete}>
+                            <Button danger icon={<DeleteOutlined />}>
+                                Delete Selected
+                            </Button>
+                        </Popconfirm>
                     )}
                 </Col>
             </Row>

@@ -1,127 +1,219 @@
-import {Dispatch, SetStateAction, useEffect, useState} from "react";
-import {useApi} from "../../../Hooks/useApi.ts";
-import {AccountType} from "../../../Types/AccountType.ts";
-import {Button, Col, List, Modal, Row, Skeleton, Space, Typography} from "antd";
+import {Dispatch, SetStateAction, useEffect, useMemo, useState} from "react";
+import {Button, Empty, Flex, Input, Modal, Segmented, Select, Space, Spin, Tag, Typography} from "antd";
+import {SearchOutlined, WarningOutlined} from "@ant-design/icons";
+import {useDispatch, useStore} from "react-redux";
+import {type AccountType, isAccountExpired, normalizeAccount, useApi} from "@socialjet/sdk";
 import ProfileImage from "./ProfileImage.tsx";
-import Link from "antd/es/typography/Link";
-import store, {ScheduleDispatch} from "../store.ts";
-import {useDispatch} from "react-redux";
+import {ScheduleDispatch, ScheduleState} from "../store.ts";
 import {pushAccountSetting, removeAccountSetting} from "../Slices/scheduleSlice.ts";
 import {sj} from "../../../SocialJet.ts";
+import PickerRow from "./PickerRow.tsx";
 
-function AccountPickerModal(props: {zIndex: number, open: boolean, setOpen: Dispatch<SetStateAction<boolean>>}) {
-    const {data: accounts, loading, sendRequest} = useApi<null, AccountType[]>();
+const ALL = '__all';
+
+const typeText = (account: AccountType) =>
+    sj.getAccountProvider(account.provider)?.getAccountTypeText(account) ?? account.type ?? '';
+
+/** Search and filtering happen client-side: `accounts/all` already returns every account. */
+function AccountPickerModal(props: { zIndex: number, open: boolean, setOpen: Dispatch<SetStateAction<boolean>> }) {
+    const {data, loading, error, sendRequest} = useApi<null, AccountType[]>();
+    const accounts = useMemo(() => (data ?? []).map(a => normalizeAccount(a)), [data]);
 
     const [selectedAccounts, setSelectedAccounts] = useState<number[]>([]);
+    const [search, setSearch] = useState('');
+    const [provider, setProvider] = useState<string>(ALL);
+    const [accountType, setAccountType] = useState<string | undefined>(undefined);
+    const [view, setView] = useState<'all' | 'selected'>('all');
     const dispatch = useDispatch<ScheduleDispatch>();
+    // From the Provider, so the picker also works under the Auto-posters store.
+    const store = useStore<ScheduleState>();
 
     const isSelected = (id: number) => selectedAccounts.includes(id);
+    const toggle = (id: number) => setSelectedAccounts(current =>
+        current.includes(id) ? current.filter(e => e !== id) : [...current, id]);
 
-    const select = (id: number) => {
-        if(!isSelected(id)) {
-            setSelectedAccounts([...selectedAccounts, id]);
-        }
+    const providers = useMemo(() => {
+        const counts = new Map<string, number>();
+        accounts.forEach(a => counts.set(a.provider, (counts.get(a.provider) ?? 0) + 1));
+        return [...counts.entries()].map(([slug, count]) => ({slug, count, provider: sj.getAccountProvider(slug)}));
+    }, [accounts]);
+
+    const typeOptions = useMemo(() => {
+        const types = new Set(accounts
+            .filter(a => provider === ALL || a.provider === provider)
+            .map(typeText)
+            .filter(Boolean));
+        return [...types].sort().map(t => ({value: t, label: t}));
+    }, [accounts, provider]);
+
+    const filtered = useMemo(() => {
+        const q = search.trim().toLowerCase();
+        return accounts.filter(a =>
+            (view === 'all' || selectedAccounts.includes(a.id)) &&
+            (provider === ALL || a.provider === provider) &&
+            (!accountType || typeText(a) === accountType) &&
+            (!q || a.title.toLowerCase().includes(q) || (a.account_key ?? '').toLowerCase().includes(q)),
+        );
+    }, [accounts, search, provider, accountType, view, selectedAccounts]);
+
+    const allVisibleSelected = filtered.length > 0 && filtered.every(a => isSelected(a.id));
+    const toggleAllVisible = () => {
+        const ids = filtered.map(a => a.id);
+        setSelectedAccounts(current => allVisibleSelected
+            ? current.filter(id => !ids.includes(id))
+            : [...new Set([...current, ...ids])]);
     };
 
-    const unselect = (id: number) => {
-        setSelectedAccounts(selectedAccounts.filter(e=> e !== id));
+    const pickProvider = (slug: string) => {
+        setProvider(slug);
+        setAccountType(undefined);
     };
 
     const onOk = () => {
-        const preselected = store.getState().schedule.accountSettings.map(e => e.account.id);
+        const current = store.getState().schedule.accountSettings;
+        const preselected = current.map(e => e.account.id);
 
-        store.getState().schedule.accountSettings.forEach(accountSetting => {
-            if(!selectedAccounts.includes(accountSetting.account.id)) {
-                dispatch(removeAccountSetting(accountSetting))
+        current.forEach(accountSetting => {
+            if (!selectedAccounts.includes(accountSetting.account.id)) {
+                dispatch(removeAccountSetting(accountSetting));
             }
         });
 
-        selectedAccounts.forEach((id: number) => {
-            if (preselected.includes(id)) {
-                return;
-            }
-
-            const account = accounts?.find(e => e.id === id);
-
-            if(!account) {
-                return;
-            }
-
-            dispatch(pushAccountSetting(account));
+        selectedAccounts.forEach(id => {
+            if (preselected.includes(id)) return;
+            const account = accounts.find(e => e.id === id);
+            if (account) dispatch(pushAccountSetting(account));
         });
 
-        props.setOpen(false)
+        props.setOpen(false);
     };
 
-    const onCancel = () => {
-        props.setOpen(false);
-    }
-
     useEffect(() => {
-        if(props.open){
+        if (props.open) {
             sendRequest("socialjet/accounts/all");
+            setSelectedAccounts(store.getState().schedule.accountSettings.map(e => e.account.id));
+        } else {
+            setSelectedAccounts([]);
+            setSearch('');
+            setProvider(ALL);
+            setAccountType(undefined);
+            setView('all');
         }
-    }, [props.open]);
-
-    useEffect(() => {
-        if(props.open){
-            setSelectedAccounts(store.getState().schedule.accountSettings.map(e => e.account.id))
-        }
-        else {
-            setSelectedAccounts([])
-        }
-    }, [props.open]);
+    }, [props.open, sendRequest, store]);
 
     return (
-        <Modal onOk={onOk} onCancel={onCancel} open={props.open} zIndex={props.zIndex} closeIcon={null} okText={'Confirm selection'}>
-            <Col>
-                <Row style={{width: '100%'}}>
-                    <Skeleton loading={loading}>
-                        <List
-                            style={{width: '100%', height: '400px', overflowY: 'auto'}}
-                            itemLayout="horizontal"
-                            dataSource={accounts || []}
-                            renderItem={(account) => {
-                                return (
-                                    <List.Item key={account.id}>
-                                        <div style={{
-                                            display: "flex",
-                                            flexDirection: "row",
-                                            alignItems: "center",
-                                            gap: "1rem",
-                                            width: "100%"
-                                        }}>
-                                            <Row justify={"space-between"} style={{width: "100%"}}>
-                                                <Col>
-                                                    <Row align={'middle'} gutter={[8, 8]}>
-                                                        <Col><ProfileImage account={account}/></Col>
-                                                        <Col>
-                                                            <Space direction="vertical" size={0}>
-                                                                <Link href={account.link} target="_blank">
-                                                                    {account.title}
-                                                                </Link>
+        <Modal
+            title="Select accounts"
+            open={props.open}
+            zIndex={props.zIndex}
+            width={680}
+            onCancel={() => props.setOpen(false)}
+            footer={
+                <Flex justify="space-between" align="center">
+                    <Typography.Text type="secondary">
+                        <Typography.Text strong>{selectedAccounts.length}</Typography.Text> account{selectedAccounts.length === 1 ? '' : 's'} selected
+                        {selectedAccounts.length > 0 && <Button type="link" size="small" onClick={() => setSelectedAccounts([])}>Clear</Button>}
+                    </Typography.Text>
+                    <Space>
+                        <Button onClick={() => props.setOpen(false)}>Cancel</Button>
+                        <Button type="primary" onClick={onOk}>Confirm selection</Button>
+                    </Space>
+                </Flex>
+            }
+        >
+            <Flex vertical gap={12}>
+                <Flex gap={8}>
+                    <Input
+                        allowClear
+                        size="large"
+                        prefix={<SearchOutlined style={{opacity: .5}}/>}
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        placeholder="Search accounts by name or ID…"
+                    />
+                    <Select
+                        allowClear
+                        size="large"
+                        placeholder="Any type"
+                        style={{width: 200, flexShrink: 0}}
+                        value={accountType}
+                        onChange={setAccountType}
+                        options={typeOptions}
+                        disabled={typeOptions.length === 0}
+                    />
+                </Flex>
 
-                                                                <Typography.Text type="secondary">
-                                                                    {sj.getAccountProvider(account.provider)?.getAccountTypeText(account)}
-                                                                </Typography.Text>
-                                                            </Space>
-                                                        </Col>
-                                                    </Row>
-                                                </Col>
-                                                {
-                                                    isSelected(account.id)
-                                                        ?<Col><Button type="default" size="small" onClick={() => unselect(account.id)}>Unselect</Button></Col>
-                                                        :<Col><Button type="primary" size="small" onClick={() => select(account.id)}>Select</Button></Col>
-                                                }
-                                            </Row>
-                                        </div>
-                                    </List.Item>
-                                );
-                            }}
-                        />
-                    </Skeleton>
-                </Row>
-            </Col>
+                {providers.length > 1 && (
+                    <Flex gap={6} wrap="wrap">
+                        <Tag.CheckableTag checked={provider === ALL} onChange={() => pickProvider(ALL)} style={{padding: '4px 12px'}}>
+                            All networks · {accounts.length}
+                        </Tag.CheckableTag>
+                        {providers.map(p => (
+                            <Tag.CheckableTag
+                                key={p.slug}
+                                checked={provider === p.slug}
+                                onChange={() => pickProvider(provider === p.slug ? ALL : p.slug)}
+                                style={{padding: '4px 12px'}}
+                            >
+                                <Space size={6}>
+                                    {p.provider?.picture}
+                                    <span>{p.provider?.title ?? p.slug} · {p.count}</span>
+                                </Space>
+                            </Tag.CheckableTag>
+                        ))}
+                    </Flex>
+                )}
+
+                <Flex justify="space-between" align="center">
+                    <Segmented
+                        size="small"
+                        value={view}
+                        onChange={v => setView(v as 'all' | 'selected')}
+                        options={[
+                            {value: 'all', label: `All (${accounts.length})`},
+                            {value: 'selected', label: `Selected (${selectedAccounts.length})`},
+                        ]}
+                    />
+                    <Button size="small" disabled={filtered.length === 0} onClick={toggleAllVisible}>
+                        {allVisibleSelected ? 'Unselect shown' : `Select shown (${filtered.length})`}
+                    </Button>
+                </Flex>
+
+                <Spin spinning={loading}>
+                    <div style={{height: 'min(360px, 42vh)', overflowY: 'auto', margin: '0 -4px', padding: '0 4px'}}>
+                        {filtered.length === 0 && !loading && (
+                            <Flex align="center" justify="center" style={{height: '100%'}}>
+                                <Empty
+                                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                    description={error ?? (accounts.length === 0
+                                        ? 'No accounts connected yet — add one on the Accounts page'
+                                        : view === 'selected' ? 'No accounts selected yet' : 'No accounts match these filters')}
+                                />
+                            </Flex>
+                        )}
+                        <Flex vertical gap={4}>
+                            {filtered.map(account => (
+                                <PickerRow
+                                    key={account.id}
+                                    selected={isSelected(account.id)}
+                                    onToggle={() => toggle(account.id)}
+                                    media={<ProfileImage account={account}/>}
+                                    title={account.title}
+                                    meta={
+                                        <Space size={6} split={<span style={{opacity: .4}}>·</span>}>
+                                            <span>{sj.getAccountProvider(account.provider)?.title ?? account.provider}</span>
+                                            {typeText(account) && <span>{typeText(account)}</span>}
+                                        </Space>
+                                    }
+                                    extra={isAccountExpired(account) && (
+                                        <Tag icon={<WarningOutlined/>} color="warning" style={{marginInlineEnd: 0}}>Expired</Tag>
+                                    )}
+                                />
+                            ))}
+                        </Flex>
+                    </div>
+                </Spin>
+            </Flex>
         </Modal>
     );
 }
